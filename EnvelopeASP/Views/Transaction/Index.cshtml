@@ -1,0 +1,38 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Layout = "_Layout";
+}
+@model (int, List<Transaction>)
+
+<a href="/Transaction/Add/@Model.Item1" class="pure-button">Add Transaction</a>
+<div style="height: 1em;"></div>
+@if(Model.Item2.Count > 0){
+
+    <table class="pure-table pure-table-bordered pure-table-striped">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Note</th>
+                <th>Amount</th>
+                <th>Date</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var r in Model.Item2)
+            {
+                <tr>
+                    <td>@r.TransactionNumber</td>
+                    <td>@r.Note</td>
+                    <td>@r.Amount</td>
+                    <td>@r.Date.ToString("yyyy-MM-dd")</td>
+                    <td><a href="/Transaction/Delete/@Model.Item1/@r.TransactionNumber" class="pure-button">Delete</a></td>
+                    <td><a href="/Transaction/Update/@Model.Item1/@r.TransactionNumber" class="pure-button">Update</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

@@ -1,0 +1,39 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Envelope";
+    Layout = "_Layout";
+}
+@model List<Envelope>
+
+<a href="/Envelope/Add" class="pure-button">Add Envelope</a>
+
+<div style="height: 1em;"></div>
+@if(Model.Count > 0)
+{
+    <table class="pure-table pure-table-bordered pure-table-striped">
+        <thead>
+            <tr>
+                <th>Envelope</th>
+                <th>Amount</th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var r in Model)
+            {
+                <tr>
+                    <td>@r.Name</td>
+                    <td>@r.Amount</td>
+                    <td><a href="/Envelope/Delete/@r.Number?name=@System.Web.HttpUtility.UrlEncode(r.Name)">Delete</a></td>
+                    <td><a href="/Envelope/Update/@r.Number?name=@System.Web.HttpUtility.UrlEncode(r.Name)">Update Name</a></td>
+                    <td><a href="/Transaction/Index/@r.Number">View Transactions</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+

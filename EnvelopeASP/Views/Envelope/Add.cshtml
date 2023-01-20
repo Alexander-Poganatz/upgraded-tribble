@@ -1,0 +1,21 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = ViewData["Operation"] + " Envelope";
+    Layout = "_Layout";
+}
+
+<form method="post" class="pure-form">
+    <label>@ViewData["Operation"] Envelope Name</label>
+    <input type="text" maxlength="50" name="envelopeName" value="@Model.ToString()" required />    
+    <input type="submit" class="pure-button pure-button-primary"/>
+</form>
+<div class="error">
+    <ul>
+        @foreach (var e in ViewData.ModelState.Values.SelectMany(f => f.Errors).Select(f => f.ErrorMessage))
+        {
+            <li>@e</li>
+        }
+    </ul>
+</div>

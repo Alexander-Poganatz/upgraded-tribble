@@ -1,0 +1,23 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["title"] = ViewData["Operation"] + " Transaction";
+    Layout = "_Layout";
+}
+@model Transaction
+<h3 class="pure-menu-heading">@ViewData["Operation"]</h3>
+<form method="post" class="pure-form pure-form-stacked">
+    <label asp-for="Amount">Amount</label><input asp-for="Amount" type="number" step="0.01" value="@if(@Model.Amount != 0){@Model.Amount}" required />
+    <label asp-for="Date">Date</label><input asp-for="Date" type="date" value='@if(Model.Date != DateTime.MinValue){@Model.Date.ToString("yyyy-MM-dd")}' required />
+    <label asp-for="Note">Note</label><input asp-for="Note" type="text" value="@Model.Note" required />
+    <input type="submit" class="pure-button pure-button-primary"/>
+</form>
+<div class="error">
+    <ul>
+        @foreach (var e in ViewData.ModelState.Values.SelectMany(f => f.Errors).Select(f => f.ErrorMessage))
+        {
+            <li>@e</li>
+        }
+    </ul>
+</div>

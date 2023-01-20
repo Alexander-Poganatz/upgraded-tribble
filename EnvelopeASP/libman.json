@@ -1,0 +1,12 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "provider": "cdnjs",
+      "library": "pure@3.0.0",
+      "destination": "wwwroot/lib/pure/",
+      "files": ["pure-min.css"]
+    }
+  ]
+}

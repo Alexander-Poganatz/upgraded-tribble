@@ -1,0 +1,325 @@
+﻿using MySqlConnector;
+
+namespace EnvelopeASP.Models
+{
+    public static class Procedures
+    {
+        public static string ConnectionString = string.Empty;
+
+        public static async Task<bool> InsertUser(string email, string hash)
+        {
+            using var connection = new MySqlConnection(ConnectionString);
+
+            using var command = connection.CreateCommand();
+
+            command.CommandText = "ins_User";
+            command.CommandType = System.Data.CommandType.StoredProcedure;
+
+            command.Parameters.Add(new MySqlParameter("e", email));
+            command.Parameters.Add(new MySqlParameter("p", hash));
+
+            var openTask = connection.OpenAsync();
+
+            await openTask;
+
+            var rowsInserted = await command.ExecuteNonQueryAsync();
+
+            await connection.CloseAsync();
+
+            return rowsInserted > 0;
+        }
+
+        public static async Task<User?> Sel_UserByEmail(string email)
+        {
+            using var connection = new MySqlConnection(ConnectionString);
+            var openTask = connection.OpenAsync();
+
+            using var command = connection.CreateCommand();
+
+            command.CommandText = "sel_UserByEmail";
+            command.CommandType = System.Data.CommandType.StoredProcedure;
+
+            command.Parameters.Add(new MySqlParameter("e", email));
+
+            await openTask;
+
+            using var reader = await command.ExecuteReaderAsync();
+
+            User? user = null;
+
+            while(reader.Read()) {
+                user = new User(reader.GetUInt32(0), reader.GetString(1), reader.GetDateTime(2));
+            }
+
+            await reader.CloseAsync();
+            await connection.CloseAsync();
+
+            return user;
+
+        }
+
+        public static async Task Upd_User_Login(uint uID, bool isValid)
+        {
+            using var connection = new MySqlConnection(ConnectionString);
+            var openTask = connection.OpenAsync();
+
+            using var command = connection.CreateCommand();
+
+            command.CommandText = "upd_User_Login";
+            command.CommandType = System.Data.CommandType.StoredProcedure;
+
+            command.Parameters.Add(new MySqlParameter("uID", uID));
+            command.Parameters.Add(new MySqlParameter("isValid", isValid));
+
+            await openTask;
+
+            await command.ExecuteNonQueryAsync();
+
+            await connection.CloseAsync();
+
+
+        }
+
+        public static async Task<ushort> Ins_Envelope(uint uID, string eName)
+        {
+            using var connection = new MySqlConnection(ConnectionString);
+            var openTask = connection.OpenAsync();
+
+            using var command = connection.CreateCommand();
+
+            command.CommandText = "ins_Envelope";
+            command.CommandType = System.Data.CommandType.StoredProcedure;
+
+            command.Parameters.Add(new MySqlParameter("uID", uID));
+            command.Parameters.Add(new MySqlParameter("eName", eName));
+
+            await openTask;
+
+            using var reader = await command.ExecuteReaderAsync();
+
+            ushort newENumber = 0;
+
+            while(await reader.ReadAsync())
+            {
+                newENumber = Convert.ToUInt16(reader[0]);
+            }
+            await reader.CloseAsync();
+            await connection.CloseAsync();
+
+            return newENumber;
+        }
+
+        public static async Task Upd_Envelope(uint uID, ushort eNumber, string newName)
+        {
+            using var connection = new MySqlConnection(ConnectionString);
+            var openTask = connection.OpenAsync();
+
+            using var command = connection.CreateCommand();
+
+            command.CommandText = "upd_Envelope";
+            command.CommandType = System.Data.CommandType.StoredProcedure;
+
+            command.Parameters.Add(new MySqlParameter("uID", uID));
+            command.Parameters.Add(new MySqlParameter("eNumber", eNumber));
+            command.Parameters.Add(new MySqlParameter("eName", newName));
+
+            await openTask;
+
+            await command.ExecuteNonQueryAsync();
+
+            await connection.CloseAsync();
+
+        }
+
+        public static async Task Del_Envelope(uint uID, ushort eNumber)
+        {
+            using var connection = new MySqlConnection(ConnectionString);
+            var openTask = connection.OpenAsync();
+
+            using var command = connection.CreateCommand();
+
+            command.CommandText = "del_Envelope";
+            command.CommandType = System.Data.CommandType.StoredProcedure;
+
+            command.Parameters.Add(new MySqlParameter("uID", uID));
+            command.Parameters.Add(new MySqlParameter("eNumber", eNumber));
+
+            await openTask;
+
+            await command.ExecuteNonQueryAsync();
+
+            await connection.CloseAsync();
+
+        }
+
+        public static async Task Ins_EnvelopeTransaction(uint uID, ushort eNumber, int amount, DateTime date, string note)
+        {
+            using var connection = new MySqlConnection(ConnectionString);
+            var openTask = connection.OpenAsync();
+
+            using var command = connection.CreateCommand();
+
+            command.CommandText = "ins_EnvelopeTransaction";
+            command.CommandType = System.Data.CommandType.StoredProcedure;
+
+            command.Parameters.Add(new MySqlParameter("uID", uID));
+            command.Parameters.Add(new MySqlParameter("eNumber", eNumber));
+            command.Parameters.Add(new MySqlParameter("amount", amount));
+            command.Parameters.Add(new MySqlParameter("tDate", date));
+            command.Parameters.Add(new MySqlParameter("tNote", note));
+
+            await openTask;
+
+            var tNumber = Convert.ToUInt32(await command.ExecuteScalarAsync());
+
+            await connection.CloseAsync();
+
+        }
+
+        public static async Task Upd_EnvelopeTransaction(uint uID, ushort eNumber, uint tNumber, int amount, DateTime date, string note)
+        {
+            using var connection = new MySqlConnection(ConnectionString);
+            var openTask = connection.OpenAsync();
+
+            using var command = connection.CreateCommand();
+
+            command.CommandText = "upd_EnvelopeTransaction";
+            command.CommandType = System.Data.CommandType.StoredProcedure;
+
+            command.Parameters.Add(new MySqlParameter("uID", uID));
+            command.Parameters.Add(new MySqlParameter("eNumber", eNumber));
+            command.Parameters.Add(new MySqlParameter("tNumber", tNumber));
+            command.Parameters.Add(new MySqlParameter("amount", amount));
+            command.Parameters.Add(new MySqlParameter("tDate", date));
+            command.Parameters.Add(new MySqlParameter("tNote", note));
+
+            await openTask;
+
+            await command.ExecuteNonQueryAsync();
+
+            await connection.CloseAsync();
+
+        }
+
+        public static async Task Del_EnvelopeTransaction(uint uID, ushort eNumber, uint tNumber)
+        {
+            using var connection = new MySqlConnection(ConnectionString);
+            var openTask = connection.OpenAsync();
+
+            using var command = connection.CreateCommand();
+
+            command.CommandText = "del_EnvelopeTransaction";
+            command.CommandType = System.Data.CommandType.StoredProcedure;
+
+            command.Parameters.Add(new MySqlParameter("uID", uID));
+            command.Parameters.Add(new MySqlParameter("eNumber", eNumber));
+            command.Parameters.Add(new MySqlParameter("tNumber", tNumber));
+
+            await openTask;
+
+            await command.ExecuteNonQueryAsync();
+
+            await connection.CloseAsync();
+
+        }
+
+        public static async Task<List<Envelope>> Sel_Envelope_Summary(uint uID)
+        {
+            using var connection = new MySqlConnection(ConnectionString);
+            var openTask = connection.OpenAsync();
+
+            using var command = connection.CreateCommand();
+
+            command.CommandText = "sel_Envelope_Summary";
+            command.CommandType = System.Data.CommandType.StoredProcedure;
+
+            command.Parameters.Add(new MySqlParameter("uID", uID));
+
+            await openTask;
+
+            using var reader = await command.ExecuteReaderAsync();
+
+            var envelopes = new List<Envelope>();
+
+            while (reader.Read())
+            {
+                double a = Convert.ToDouble(reader.GetInt32(2)) / 100.0;
+                
+                var e = new Envelope(reader.GetUInt16(0), reader.GetString(1), a);
+                envelopes.Add(e);
+            }
+
+            await reader.CloseAsync();
+            await connection.CloseAsync();
+
+            return envelopes;
+        }
+
+        public static async Task<List<Transaction>> Sel_Transactions(uint uID, ushort envelopeNumber)
+        {
+            using var connection = new MySqlConnection(ConnectionString);
+            var openTask = connection.OpenAsync();
+
+            using var command = connection.CreateCommand();
+
+            command.CommandText = "sel_Transactions";
+            command.CommandType = System.Data.CommandType.StoredProcedure;
+
+            command.Parameters.Add(new MySqlParameter("uID", uID));
+            command.Parameters.Add(new MySqlParameter("eNumber", envelopeNumber));
+
+            await openTask;
+
+            using var reader = await command.ExecuteReaderAsync();
+
+            var transactions = new List<Transaction>();
+
+            while (reader.Read())
+            {
+                double a = Convert.ToDouble(reader.GetInt32(1)) / 100.0;
+
+                var e = new Transaction(reader.GetUInt32(0), a, reader.GetDateTime(2), reader.GetString(3));
+                transactions.Add(e);
+            }
+
+            await reader.CloseAsync();
+            await connection.CloseAsync();
+
+            return transactions;
+        }
+
+        public static async Task<Transaction?> Sel_Transaction(uint uID, ushort envelopeNumber, uint tNumber)
+        {
+            using var connection = new MySqlConnection(ConnectionString);
+            var openTask = connection.OpenAsync();
+
+            using var command = connection.CreateCommand();
+
+            command.CommandText = "sel_Transaction";
+            command.CommandType = System.Data.CommandType.StoredProcedure;
+
+            command.Parameters.Add(new MySqlParameter("uID", uID));
+            command.Parameters.Add(new MySqlParameter("eNumber", envelopeNumber));
+            command.Parameters.Add(new MySqlParameter("tNumber", tNumber));
+
+            await openTask;
+
+            using var reader = await command.ExecuteReaderAsync();
+
+            Transaction? transaction = null;
+
+            while (reader.Read())
+            {
+                double a = Convert.ToDouble(reader.GetInt32(1)) / 100.0;
+
+                transaction = new Transaction(reader.GetUInt32(0), a, reader.GetDateTime(2), reader.GetString(3));
+                
+            }
+
+            await reader.CloseAsync();
+            await connection.CloseAsync();
+
+            return transaction;
+        }
+    }
+}

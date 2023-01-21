@@ -14,6 +14,9 @@ string executingPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecu
 
 var appsettings = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json")
+#if DEBUG
+    .AddUserSecrets<Program>()
+#endif
     .AddCommandLine(args)
     .Build();
 

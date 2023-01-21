@@ -3,6 +3,7 @@
 // See https://aka.ms/new-console-template for more information
 using DbUp;
 using DbUp.Engine;
+using EnvelopeDbUp;
 using Microsoft.Extensions.Configuration;
 
 int returnCode = 1;
@@ -16,11 +17,19 @@ var appsettings = new ConfigurationBuilder()
     .AddCommandLine(args)
     .Build();
 
+var connectionString = appsettings["dbConnection"];
+
+if (string.IsNullOrEmpty(connectionString))
+{
+    Console.WriteLine("Error: no connection string is provided");
+    return returnCode;
+}
+
 var oneTimeOptions = new SqlScriptOptions() { ScriptType = DbUp.Support.ScriptType.RunOnce, RunGroupOrder = 1 };
 var alwaysOptions = new SqlScriptOptions() { ScriptType = DbUp.Support.ScriptType.RunAlways, RunGroupOrder = 255 };
 
 var upgrader = DeployChanges.To
-    .MySqlDatabase(string.Empty) // todo connection string
+    .MySqlDatabase(new CustomMySQLConnector(connectionString))
     .WithScriptsFromFileSystem(Path.Combine(executingPath, "Scripts", "OneTime"), oneTimeOptions)
     .WithScriptsFromFileSystem(Path.Combine(executingPath, "Scripts", "Always"), alwaysOptions)
     .WithExecutionTimeout(TimeSpan.FromMinutes(2))

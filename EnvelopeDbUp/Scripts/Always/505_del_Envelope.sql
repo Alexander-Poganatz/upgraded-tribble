@@ -1,0 +1,21 @@
+
+DELIMITER //
+
+DROP PROCEDURE IF EXISTS del_Envelope;
+CREATE PROCEDURE del_Envelope(
+	IN uID INT UNSIGNED
+	,IN eNumber SMALLINT UNSIGNED
+)
+BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	BEGIN
+		ROLLBACK;
+		RESIGNAL;
+	END;
+	START TRANSACTION;
+	DELETE FROM envelopetransaction WHERE EnvelopeID IN (SELECT EnvelopeID FROM envelope WHERE UserID = uID AND EnvelopeNumber = eNumber);
+	DELETE FROM envelope WHERE UserID = uID AND EnvelopeNumber = eNumber;
+	COMMIT;
+END //
+
+DELIMITER ;

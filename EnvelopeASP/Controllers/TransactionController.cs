@@ -1,6 +1,7 @@
 ﻿using EnvelopeASP.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace EnvelopeASP.Controllers
 {
@@ -42,6 +43,40 @@ namespace EnvelopeASP.Controllers
             }
 
             model ??= new Transaction();
+            return View(model);
+        }
+
+        public async Task<IActionResult> Transfer(int? id, [FromForm] TransferModel model)
+        {
+            if (id.HasValue == false)
+            {
+                return RedirectToAction("Index");
+            }
+            if (Request.Method == System.Net.WebRequestMethods.Http.Post)
+            {
+                if (ModelState.IsValid == false)
+                {
+                    return View(model);
+                }
+                if(model.DestinationNumber.HasValue == false)
+                {
+                    return View(model);
+                }
+                var uID = Utils.GetUserIDFromClaims(HttpContext.User);
+                var eID = Convert.ToUInt16(Math.Abs(id.Value));
+                var dID = Convert.ToUInt16(Math.Abs(model.DestinationNumber.Value));
+
+                //todo, dollar to cent conversion
+                await Procedures.Transfer(uID, eID, dID, Utils.DoubleMoneyToCents(model.Amount));
+                return RedirectToAction("Index", id);
+            }
+
+            model ??= new TransferModel();
+            if(model.Envelopes.Count == 0)
+            {
+                var envelopes = await Procedures.Sel_Envelope_Summary(Utils.GetUserIDFromClaims(HttpContext.User));
+                model.Envelopes = envelopes.Where(f => f.Number != id).Select(f => new SelectListItem(f.Name + " - " + f.Amount, f.Number.ToString())).ToList();
+            }
             return View(model);
         }
 

@@ -321,5 +321,29 @@ namespace EnvelopeASP.Models
 
             return transaction;
         }
+
+        public static async Task<bool> Transfer(uint uID, ushort eSourceNumber, ushort eDestinationNumber, int amount)
+        {
+            using var connection = new MySqlConnection(ConnectionString);
+            var openTask = connection.OpenAsync();
+
+            using var command = connection.CreateCommand();
+
+            command.CommandText = "transfer";
+            command.CommandType = System.Data.CommandType.StoredProcedure;
+
+            command.Parameters.Add(new MySqlParameter("uID", uID));
+            command.Parameters.Add(new MySqlParameter("eSourceNumber", eSourceNumber));
+            command.Parameters.Add(new MySqlParameter("eDestinationNumber", eDestinationNumber));
+            command.Parameters.Add(new MySqlParameter("amount", amount));
+
+            await openTask;
+
+            var tNumber = Convert.ToInt32(await command.ExecuteScalarAsync());
+
+            await connection.CloseAsync();
+
+            return tNumber > 0;
+        }
     }
 }

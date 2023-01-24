@@ -6,6 +6,7 @@
 }
 @model (int, List<Transaction>)
 
+<a href="/Transaction/Transfer/@Model.Item1" class="pure-button">Transfer</a>
 <a href="/Transaction/Add/@Model.Item1" class="pure-button">Add Transaction</a>
 <div style="height: 1em;"></div>
 @if(Model.Item2.Count > 0){

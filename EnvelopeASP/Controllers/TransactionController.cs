@@ -39,7 +39,7 @@ namespace EnvelopeASP.Controllers
 
                 //todo, dollar to cent conversion
                 await Procedures.Ins_EnvelopeTransaction(uID, eID, Utils.DoubleMoneyToCents(model.Amount), model.Date, model.Note);
-                return RedirectToAction("Index", id);
+                return RedirectToAction("Index", new { id });
             }
 
             model ??= new Transaction();
@@ -68,7 +68,7 @@ namespace EnvelopeASP.Controllers
 
                 //todo, dollar to cent conversion
                 await Procedures.Transfer(uID, eID, dID, Utils.DoubleMoneyToCents(model.Amount));
-                return RedirectToAction("Index", id);
+                return RedirectToAction("Index", new { id });
             }
 
             model ??= new TransferModel();
@@ -140,7 +140,7 @@ namespace EnvelopeASP.Controllers
                 var nmodel = await Procedures.Sel_Transaction(uID, eid, tid);
                 if (nmodel == null)
                 {
-                    return RedirectToAction("Index");
+                    return RedirectToAction("Index", new { id = ((int)eid) });
                 }
                 model = nmodel;
             }

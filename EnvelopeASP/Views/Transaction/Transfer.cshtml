@@ -1,0 +1,23 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Transfer Amount";
+    Layout = "_Layout";
+}
+@model TransferModel
+
+<form method="post" class="pure-form">
+    <label asp-for="DestinationNumber">Transfer To</label>
+    <select asp-for="DestinationNumber" asp-items="Model.Envelopes"></select>
+    <input type="number" asp-for="Amount" step="0.01" value="@if(Model.Amount != 0){@Model.Amount;}" required />
+    <input type="submit" class="pure-button pure-button-primary" />
+</form>
+<div class="error">
+    <ul>
+        @foreach (var e in ViewData.ModelState.Values.SelectMany(f => f.Errors).Select(f => f.ErrorMessage))
+        {
+            <li>@e</li>
+        }
+    </ul>
+</div>

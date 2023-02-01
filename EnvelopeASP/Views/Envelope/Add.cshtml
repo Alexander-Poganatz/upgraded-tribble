@@ -6,10 +6,10 @@
     Layout = "_Layout";
 }
 
-<form method="post" class="pure-form">
+<form method="post">
     <label>@ViewData["Operation"] Envelope Name</label>
     <input type="text" maxlength="50" name="envelopeName" value="@Model.ToString()" required />    
-    <input type="submit" class="pure-button pure-button-primary"/>
+    <input type="submit"/>
 </form>
 <div class="error">
     <ul>

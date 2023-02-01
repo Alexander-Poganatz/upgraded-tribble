@@ -6,12 +6,13 @@
     Layout = "_Layout";
 }
 @model TransferModel
-
-<form method="post" class="pure-form">
+<h1>Transfer</h1>
+<form method="post">
     <label asp-for="DestinationNumber">Transfer To</label>
     <select asp-for="DestinationNumber" asp-items="Model.Envelopes"></select>
+    <label asp-for="Amount">Amount</label>
     <input type="number" asp-for="Amount" step="0.01" value="@if(Model.Amount != 0){@Model.Amount;}" required />
-    <input type="submit" class="pure-button pure-button-primary" />
+    <input type="submit" />
 </form>
 <div class="error">
     <ul>

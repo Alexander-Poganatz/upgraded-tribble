@@ -4,31 +4,29 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - EnvelopeASP</title>
-    <link rel="stylesheet" href="~/lib/pure/pure-min.css" integrity="sha512-X2yGIVwg8zeG8N4xfsidr9MqIfIE8Yz1It+w2rhUJMqxUwvbVqC5OPcyRlPKYOw/bsdJut91//NO9rSbQZIPRQ=="/>
+    <link rel="stylesheet" href="~/lib/picnic/picnic.min.css" integrity="sha512-HZgZOfcUw1rxWuEBlzDis5U4HlbzR0wcWmb3FrLSKV6uhZiZpT9JSTzPJplHDmJZJFNfAReW+iDELJ1kADYHtA==" crossorigin="anonymous" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/EnvelopeASP.styles.css" asp-append-version="true" />
 </head>
 <body>
     <header>
-        <nav class="pure-menu pure-menu-horizontal">
+        <nav>
+            <a class="pseudo button" asp-area="" asp-controller="Home" asp-action="Index">EnvelopeASP</a>
+            <div class="menu">
+                
 
-            <a class="pure-menu-heading" asp-area="" asp-controller="Home" asp-action="Index">EnvelopeASP</a>
-
-            <ul class="pure-menu-list">
-                <li class="pure-menu-item">
-                    <a class="pure-menu-link" asp-area="" asp-controller="Envelope" asp-action="Index">Envelopes</a>
-                </li>
-                <li class="pure-menu-item">
-                    @if (User.Identity.IsAuthenticated)
-                    {
-                        <a class="pure-menu-link" asp-area="" asp-controller="Account" asp-action="Logout">Logout</a>
-                    } else
-                    {
-                        <a class="pure-menu-link" asp-area="" asp-controller="Account" asp-action="Login">Sign In</a>
-                    }
+                <a class="pseudo button" asp-area="" asp-controller="Envelope" asp-action="Index">Envelopes</a>
                     
-                </li>
-            </ul>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <a class="pseudo button" asp-area="" asp-controller="Account" asp-action="Logout">Logout</a>
+                }
+                else
+                {
+                    <a class="pseudo button" asp-area="" asp-controller="Account" asp-action="Login">Sign In</a>
+                }
+
+            </div>
+            
                 
         </nav>
     </header>

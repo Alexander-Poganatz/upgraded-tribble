@@ -6,9 +6,9 @@
     ViewData["title"] = "Delete Transaction";
 }
 @model string
-<form method="post" class="pure-form">
+<form method="post">
     <p>Are you sure you want to delete @Model?</p>
-    <input type="radio" name="yesno" value="Yes" /><label for="yesno">Yes</label>
-    <input type="radio" name="yesno" value="No" /><label for="yesno">No</label>
-    <input type="submit" class="pure-button"/>
+    <label><input type="radio" name="yesno" value="Yes" /><span class="checkable">Yes</span></label>
+    <label><input type="radio" name="yesno" value="No" /><span class="checkable">No</span></label>
+    <input type="submit" />
 </form>

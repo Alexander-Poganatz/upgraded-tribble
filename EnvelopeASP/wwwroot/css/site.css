@@ -14,9 +14,9 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
-  max-width: 600px;
-  margin: auto;
+    max-width: 768px;
+    margin: auto;
+    margin-top: 60px;
 }
 
 /*Copied from the _Layout.css file */

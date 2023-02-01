@@ -6,12 +6,13 @@
     ViewData["title"] = "Delete Transaction";
 }
 @model Transaction
-<form method="post" class="pure-form">
+<h1>Delete?</h1>
+<form method="post">
     <p>Are you sure you want to delete @Model.Amount - @Model.Date.ToString("yyyy-MM-dd") - @Model.Note?</p>
     <input type="hidden" asp-for="Date" />
     <input type="hidden" asp-for="Amount" />
     <input type="hidden" asp-for="Note" />
-    <input type="radio" name="yesno" value="Yes" /><label for="Yes">Yes</label>
-    <input type="radio" name="yesno" value="No" /><label for="No">No</label>
-    <input type="submit" class="pure-button"/>
+    <label><input type="radio" name="yesno" value="Yes" /><span class="checkable">Yes</span></label>
+    <label><input type="radio" name="yesno" value="No" /><span class="checkable">No</span></label>
+    <input type="submit" />
 </form>

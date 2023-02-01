@@ -6,14 +6,15 @@
 }
 @model SignUp
 <div>
-    <form method="post" class="pure-form pure-form-stacked">
+    <h1>Registration Form</h1>
+    <form method="post">
         <label asp-for="Email">Email</label>
         <input type="text" asp-for="Email" required />
         <label asp-for="Password"></label>
         <input type="password" asp-for="Password" required />
         <label for="ConfirmPassword">Confirm Password</label>
         <input type="password" asp-for="ConfirmPassword" required />
-        <input type="submit" class="pure-button pure-button-primary"/>
+        <input type="submit" />
     </form>
     <p>@ViewBag.Error</p>
 </div>

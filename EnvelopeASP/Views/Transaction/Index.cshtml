@@ -3,15 +3,16 @@
 *@
 @{
     Layout = "_Layout";
+    ViewData["Title"] = "Transactions";
 }
 @model (int, List<Transaction>)
 
-<a href="/Transaction/Transfer/@Model.Item1" class="pure-button">Transfer</a>
-<a href="/Transaction/Add/@Model.Item1" class="pure-button">Add Transaction</a>
+<a href="/Transaction/Transfer/@Model.Item1" class="button">Transfer</a>
+<a href="/Transaction/Add/@Model.Item1" class="button">Add Transaction</a>
 <div style="height: 1em;"></div>
 @if(Model.Item2.Count > 0){
 
-    <table class="pure-table pure-table-bordered pure-table-striped">
+    <table class="success">
         <thead>
             <tr>
                 <th></th>
@@ -30,8 +31,8 @@
                     <td>@r.Note</td>
                     <td>@r.Amount</td>
                     <td>@r.Date.ToString("yyyy-MM-dd")</td>
-                    <td><a href="/Transaction/Delete/@Model.Item1/@r.TransactionNumber" class="pure-button">Delete</a></td>
-                    <td><a href="/Transaction/Update/@Model.Item1/@r.TransactionNumber" class="pure-button">Update</a></td>
+                    <td><a href="/Transaction/Delete/@Model.Item1/@r.TransactionNumber" class="button warning">Delete</a></td>
+                    <td><a href="/Transaction/Update/@Model.Item1/@r.TransactionNumber" class="button">Update</a></td>
                 </tr>
             }
         </tbody>

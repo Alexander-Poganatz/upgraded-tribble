@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="~/lib/picnic/picnic.min.css" integrity="sha512-HZgZOfcUw1rxWuEBlzDis5U4HlbzR0wcWmb3FrLSKV6uhZiZpT9JSTzPJplHDmJZJFNfAReW+iDELJ1kADYHtA==" crossorigin="anonymous" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" crossorigin="anonymous"/>
 </head>
-<body>
+<body class="js-off">
     <header>
         <nav>
             <a class="pseudo button" asp-area="" asp-controller="Home" asp-action="Index">EnvelopeASP</a>
@@ -50,6 +50,5 @@
         <script src="~/lib/htmx/htmx.js" asp-append-version="true" integrity="sha512-rw+Ogap1U6EBWSPQ6snzxRaBn39OkUqwXpEJ2zhD7y3/wqzs7irKw5wv0BZjHdwmzYLs18zyj5h14MbRFfQNGg==" crossorigin="anonymous"></script>
     </environment>
     
-    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

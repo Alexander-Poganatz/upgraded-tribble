@@ -11,8 +11,8 @@
     <a href="/Transaction/Transfer/@Model.Item1" class="button">Transfer</a>
     <a href="/Transaction/Add/@Model.Item1" class="button">Add Transaction</a>
 </noscript>
-<label for="modal1" hx-get="/Transaction/Transfer/@Model.Item1" hx-target="#modalBody" class="button">Transfer</label>
-<label for="modal1" hx-get="/Transaction/Add/@Model.Item1" hx-target="#modalBody" class="button">Add</label>
+<label for="modal1" hx-get="/Transaction/Transfer/@Model.Item1" hx-target="#modalBody" class="button js-on">Transfer</label>
+<label for="modal1" hx-get="/Transaction/Add/@Model.Item1" hx-target="#modalBody" class="button js-on">Add</label>
 
 <div style="height: 1em;"></div>
 @if(Model.Item2.Count > 0){
@@ -40,13 +40,13 @@
                         <noscript>
                             <a href="/Transaction/Delete/@Model.Item1/@r.TransactionNumber" class="button warning">Delete</a>
                         </noscript>
-                        <label for="modal1" hx-get="/Transaction/Delete/@Model.Item1/@r.TransactionNumber" hx-target="#modalBody" class="button warning">Delete</label>
+                        <label for="modal1" hx-get="/Transaction/Delete/@Model.Item1/@r.TransactionNumber" hx-target="#modalBody" class="button warning js-on">Delete</label>
                     </td>
                     <td>
                         <noscript>
                             <a href="/Transaction/Update/@Model.Item1/@r.TransactionNumber" class="button">Update</a>
                         </noscript>
-                        <label for="modal1" hx-get="/Transaction/Update/@Model.Item1/@r.TransactionNumber" hx-target="#modalBody" class="button warning">Update</label>
+                        <label for="modal1" hx-get="/Transaction/Update/@Model.Item1/@r.TransactionNumber" hx-target="#modalBody" class="button warning js-on">Update</label>
                     </td>
                 </tr>
             }

@@ -7,7 +7,6 @@
 }
 @model List<Envelope>
 
-<a href="/Envelope/Add">Add Envelope</a>
 <noscript>
     <a href="/Envelope/Add">Add Envelope</a>
 </noscript>
@@ -40,7 +39,7 @@
                         <noscript>
                             <a href="/Envelope/Update/@r.Number?name=@System.Web.HttpUtility.UrlEncode(r.Name)" class="warning">Update</a>
                         </noscript>
-                        <label for="modal1" class="warning" hx-get="/Envelope/Update/@r.Number?name=@System.Web.HttpUtility.UrlEncode(r.Name)" hx-target="#modalBody">Show Modal</label>
+                        <label for="modal1" class="warning js-on" hx-get="/Envelope/Update/@r.Number?name=@System.Web.HttpUtility.UrlEncode(r.Name)" hx-target="#modalBody">Show Modal</label>
                     </td>
                     <td>
                         <a href="/Transaction/Index/@r.Number">View Transactions</a>

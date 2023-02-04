@@ -30,3 +30,11 @@ body {
 .error {
     color: red;
 }
+
+.modal-body {
+    padding: 5%;
+}
+
+.js-off .js-on {
+    display: none;
+}

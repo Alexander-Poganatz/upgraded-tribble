@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - EnvelopeASP</title>
     <link rel="stylesheet" href="~/lib/picnic/picnic.min.css" integrity="sha512-HZgZOfcUw1rxWuEBlzDis5U4HlbzR0wcWmb3FrLSKV6uhZiZpT9JSTzPJplHDmJZJFNfAReW+iDELJ1kADYHtA==" crossorigin="anonymous" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" crossorigin="anonymous"/>
 </head>
-<body>
+<body class="js-off">
     <header>
         <nav>
             <a class="pseudo button" asp-area="" asp-controller="Home" asp-action="Index">EnvelopeASP</a>
@@ -42,7 +42,13 @@
             &copy; 2023 - EnvelopeASP
         </div>
     </footer>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+    <script src="~/js/site.js" asp-append-version="true" crossorigin="anonymous"></script>
+    <environment exclude="Development">
+        <script src="~/lib/htmx/htmx.min.js" asp-append-version="true" integrity="sha512-B5IkMjoTFeR6sB/Mbd6eNnF0pwvfG5ZgSGdH4pL2uWnadND4pWTFXxXi3TBBKCZWGaWx83AujfrzFQuqfau11Q==" crossorigin="anonymous"></script>
+    </environment>
+    <environment include="Development">
+        <script src="~/lib/htmx/htmx.js" asp-append-version="true" integrity="sha512-rw+Ogap1U6EBWSPQ6snzxRaBn39OkUqwXpEJ2zhD7y3/wqzs7irKw5wv0BZjHdwmzYLs18zyj5h14MbRFfQNGg==" crossorigin="anonymous"></script>
+    </environment>
+    
 </body>
 </html>

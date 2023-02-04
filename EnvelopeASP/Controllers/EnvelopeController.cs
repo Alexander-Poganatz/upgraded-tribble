@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 namespace EnvelopeASP.Controllers
 {
     [Microsoft.AspNetCore.Authorization.Authorize]
+    [HTMXDefaultLayoutFilter]
     public class EnvelopeController : Controller
     {
         

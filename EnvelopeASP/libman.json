@@ -6,7 +6,13 @@
       "provider": "cdnjs",
       "library": "picnic@7.1.0",
       "destination": "wwwroot/lib/picnic/",
-      "files": ["picnic.min.css"]
+      "files": [ "picnic.min.css" ]
+    },
+    {
+      "provider": "cdnjs",
+      "library": "htmx@1.8.5",
+      "destination": "wwwroot/lib/htmx/",
+      "files": [ "htmx.min.js", "htmx.js" ]
     }
   ]
 }

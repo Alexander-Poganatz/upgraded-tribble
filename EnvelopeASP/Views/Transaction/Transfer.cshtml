@@ -3,22 +3,31 @@
 *@
 @{
     ViewData["Title"] = "Transfer Amount";
-    Layout = "_Layout";
+    Layout = ViewData[Utils.LAYOUT]?.ToString();
 }
 @model TransferModel
-<h1>Transfer</h1>
-<form method="post">
-    <label asp-for="DestinationNumber">Transfer To</label>
-    <select asp-for="DestinationNumber" asp-items="Model.Envelopes"></select>
-    <label asp-for="Amount">Amount</label>
-    <input type="number" asp-for="Amount" step="0.01" value="@if(Model.Amount != 0){@Model.Amount;}" required />
-    <input type="submit" />
-</form>
-<div class="error">
-    <ul>
-        @foreach (var e in ViewData.ModelState.Values.SelectMany(f => f.Errors).Select(f => f.ErrorMessage))
+<article>
+    <header><h3>Transfer</h3></header>
+    <section>
+        @using (Html.BeginForm(FormMethod.Post, new { @id="mainform"}))
         {
-            <li>@e</li>
+            <label asp-for="DestinationNumber">Transfer To</label>
+            <select asp-for="DestinationNumber" asp-items="Model.Envelopes"></select>
+            <label asp-for="Amount">Amount</label>
+            <input type="number" asp-for="Amount" step="0.01" value="@if(Model.Amount != 0){@Model.Amount;}" required />
         }
-    </ul>
-</div>
+    </section>
+    <footer>
+        <input type="submit" form="mainform"/>
+        <label for="modal1" class="button dangerous js-on">Cancel</label>
+        <div class="error">
+            <ul>
+                @foreach (var e in ViewData.ModelState.Values.SelectMany(f => f.Errors).Select(f => f.ErrorMessage))
+                {
+                    <li>@e</li>
+                }
+            </ul>
+        </div>
+    </footer>
+</article>
+

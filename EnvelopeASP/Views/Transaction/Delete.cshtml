@@ -2,17 +2,21 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
-    Layout = "_Layout";
+    Layout = ViewData[Utils.LAYOUT]?.ToString();
     ViewData["title"] = "Delete Transaction";
 }
 @model Transaction
-<h1>Delete?</h1>
-<form method="post">
-    <p>Are you sure you want to delete @Model.Amount - @Model.Date.ToString("yyyy-MM-dd") - @Model.Note?</p>
-    <input type="hidden" asp-for="Date" />
-    <input type="hidden" asp-for="Amount" />
-    <input type="hidden" asp-for="Note" />
-    <label><input type="radio" name="yesno" value="Yes" /><span class="checkable">Yes</span></label>
-    <label><input type="radio" name="yesno" value="No" /><span class="checkable">No</span></label>
-    <input type="submit" />
-</form>
+<article>
+    <header><h3>Delete?</h3></header>
+    <section>
+        @using (Html.BeginForm(FormMethod.Post, new { @id="mainform" })) {
+            <p>Are you sure you want to delete @Model.Amount - @Model.Date.ToString("yyyy-MM-dd") - @Model.Note?</p>
+            <label><input type="radio" name="yesno" value="Yes" required/><span class="checkable">Yes</span></label>
+            <label><input type="radio" name="yesno" value="No" checked/><span class="checkable">No</span></label>
+        }
+
+    </section>
+    <footer>
+        <input type="submit" form="mainform" />
+    </footer>
+</article>

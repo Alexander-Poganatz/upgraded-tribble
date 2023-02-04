@@ -8,6 +8,10 @@
 @model List<Envelope>
 
 <a href="/Envelope/Add">Add Envelope</a>
+<noscript>
+    <a href="/Envelope/Add">Add Envelope</a>
+</noscript>
+<label for="modal1" class="button js-on" hx-get="/Envelope/Add" hx-target="#modalBody">Add Envelope</label>
 
 <div style="height: 1em;"></div>
 @if(Model.Count > 0)
@@ -28,12 +32,31 @@
                 <tr>
                     <td>@r.Name</td>
                     <td>@r.Amount</td>
-                    <td><a href="/Envelope/Delete/@r.Number?name=@System.Web.HttpUtility.UrlEncode(r.Name)" class="error">Delete</a></td>
-                    <td><a href="/Envelope/Update/@r.Number?name=@System.Web.HttpUtility.UrlEncode(r.Name)" class="warning">Update</a></td>
-                    <td><a href="/Transaction/Index/@r.Number">View Transactions</a></td>
+                    <td>
+                        <noscript><a href="/Envelope/Delete/@r.Number?name=@System.Web.HttpUtility.UrlEncode(r.Name)" class="error">Delete</a></noscript>
+                        <label for="modal1" class="error js-on" hx-get="/Envelope/Delete/@r.Number?name=@System.Web.HttpUtility.UrlEncode(r.Name)" hx-target="#modalBody">Delete</label>
+                    </td>
+                    <td>
+                        <noscript>
+                            <a href="/Envelope/Update/@r.Number?name=@System.Web.HttpUtility.UrlEncode(r.Name)" class="warning">Update</a>
+                        </noscript>
+                        <label for="modal1" class="warning" hx-get="/Envelope/Update/@r.Number?name=@System.Web.HttpUtility.UrlEncode(r.Name)" hx-target="#modalBody">Show Modal</label>
+                    </td>
+                    <td>
+                        <a href="/Transaction/Index/@r.Number">View Transactions</a>
+                    </td>
                 </tr>
             }
         </tbody>
     </table>
 }
 
+<div class="modal">
+    <input id="modal1" type="checkbox" />
+    <label for="modal1" class="overlay"></label>
+    <div class="modal-body" id="modalBody">
+
+        
+    </div>
+    
+</div>

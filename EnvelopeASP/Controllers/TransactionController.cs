@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace EnvelopeASP.Controllers
 {
     [Authorize]
+    [HTMXDefaultLayoutFilter]
     public class TransactionController : Controller
     {
         public async Task<IActionResult> Index(int? id)

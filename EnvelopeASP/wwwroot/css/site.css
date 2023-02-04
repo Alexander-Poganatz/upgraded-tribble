@@ -30,3 +30,7 @@ body {
 .error {
     color: red;
 }
+
+.modal-body {
+    padding: 5%;
+}

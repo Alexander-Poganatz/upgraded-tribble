@@ -37,9 +37,9 @@
                     </td>
                     <td>
                         <noscript>
-                            <a href="/Envelope/Update/@r.Number?name=@System.Web.HttpUtility.UrlEncode(r.Name)" class="warning">Update</a>
+                            <a href="/Envelope/Update/@r.Number?name=@System.Web.HttpUtility.UrlEncode(r.Name)" class="button">Update</a>
                         </noscript>
-                        <label for="modal1" class="warning js-on" hx-get="/Envelope/Update/@r.Number?name=@System.Web.HttpUtility.UrlEncode(r.Name)" hx-target="#modalBody">Show Modal</label>
+                        <label for="modal1" class="button js-on" hx-get="/Envelope/Update/@r.Number?name=@System.Web.HttpUtility.UrlEncode(r.Name)" hx-target="#modalBody">Update</label>
                     </td>
                     <td>
                         <a href="/Transaction/Index/@r.Number">View Transactions</a>
@@ -59,3 +59,4 @@
     </div>
     
 </div>
+<script>document.getElementById("modal1").checked = false;</script>

@@ -10,7 +10,7 @@ namespace EnvelopeASP.Controllers
     [HTMXDefaultLayoutFilter]
     public class TransactionController : Controller
     {
-        public async Task<IActionResult> Index(int? id)
+        public async Task<IActionResult> Index(int? id, uint page)
         {
             if(id.HasValue == false)
             {
@@ -18,9 +18,10 @@ namespace EnvelopeASP.Controllers
             }
             var uid = Utils.GetUserIDFromClaims(HttpContext.User);
 
-            var transactions = await Procedures.Sel_Transactions(uid, Convert.ToUInt16(Math.Abs(id.Value)));
+            page = Math.Max(1, page);
 
-            return View((id.Value,transactions));
+            var transactions = await Procedures.Sel_Transactions(uid, Convert.ToUInt16(Math.Abs(id.Value)), Utils.DEFAULT_PAGINATION_SIZE, page);
+            return View((id.Value,transactions, page));
         }
 
         public async Task<IActionResult> Add(int? id, [FromForm]Transaction model)
@@ -141,16 +142,16 @@ namespace EnvelopeASP.Controllers
                 {
                     return View(model);
                 }
-                if(val.Equals("No", StringComparison.OrdinalIgnoreCase))
-                {
-                    return Redirect("/Transaction/Index/" + eid);
-                }
                 if(val.Equals("Yes", StringComparison.OrdinalIgnoreCase))
                 {
                     await Procedures.Del_EnvelopeTransaction(uID, eid, tid);
-                    return Redirect("/Transaction/Index/" + eid);
                 }
-
+                if (Utils.RequestIsHTMX(HttpContext))
+                {
+                    Response.Headers.Add("HX-Refresh", "true");
+                    return View(model);
+                }
+                return Redirect("/Transaction/Index/" + eid);
             }
             if (model.TransactionNumber == 0)
             {

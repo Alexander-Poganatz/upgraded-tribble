@@ -9,7 +9,8 @@
 <article>
     <header><h3>Delete?</h3></header>
     <section>
-        @using (Html.BeginForm(FormMethod.Post, new { @id="mainform" })) {
+        @using (Html.BeginForm(FormMethod.Post, new { @id = "mainform", @hx_post = this.Context.Request.Path }))
+        {
             <p>Are you sure you want to delete @Model.Amount - @Model.Date.ToString("yyyy-MM-dd") - @Model.Note?</p>
             <label><input type="radio" name="yesno" value="Yes" required/><span class="checkable">Yes</span></label>
             <label><input type="radio" name="yesno" value="No" checked/><span class="checkable">No</span></label>

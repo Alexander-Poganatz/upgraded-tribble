@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 var builder = WebApplication.CreateBuilder(args);
 
-EnvelopeASP.Models.Procedures.ConnectionString = builder.Configuration["dbConnection"] ?? string.Empty;
+EnvelopeASP.Models.Procedures.SetConnectionString(builder.Configuration["dbConnection"] ?? string.Empty);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

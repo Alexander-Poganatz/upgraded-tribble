@@ -4,11 +4,15 @@ namespace EnvelopeASP.Models
 {
     public static class Procedures
     {
-        public static string ConnectionString = string.Empty;
+        private static string _connectionString = string.Empty;
+        public static void SetConnectionString(string connectionString)
+        {
+            _connectionString = connectionString;
+        }
 
         public static async Task<bool> InsertUser(string email, string hash)
         {
-            using var connection = new MySqlConnection(ConnectionString);
+            using var connection = new MySqlConnection(_connectionString);
 
             using var command = connection.CreateCommand();
 
@@ -31,7 +35,7 @@ namespace EnvelopeASP.Models
 
         public static async Task<User?> Sel_UserByEmail(string email)
         {
-            using var connection = new MySqlConnection(ConnectionString);
+            using var connection = new MySqlConnection(_connectionString);
             var openTask = connection.OpenAsync();
 
             using var command = connection.CreateCommand();
@@ -60,7 +64,7 @@ namespace EnvelopeASP.Models
 
         public static async Task Upd_User_Login(uint uID, bool isValid)
         {
-            using var connection = new MySqlConnection(ConnectionString);
+            using var connection = new MySqlConnection(_connectionString);
             var openTask = connection.OpenAsync();
 
             using var command = connection.CreateCommand();
@@ -82,7 +86,7 @@ namespace EnvelopeASP.Models
 
         public static async Task<ushort> Ins_Envelope(uint uID, string eName)
         {
-            using var connection = new MySqlConnection(ConnectionString);
+            using var connection = new MySqlConnection(_connectionString);
             var openTask = connection.OpenAsync();
 
             using var command = connection.CreateCommand();
@@ -111,7 +115,7 @@ namespace EnvelopeASP.Models
 
         public static async Task Upd_Envelope(uint uID, ushort eNumber, string newName)
         {
-            using var connection = new MySqlConnection(ConnectionString);
+            using var connection = new MySqlConnection(_connectionString);
             var openTask = connection.OpenAsync();
 
             using var command = connection.CreateCommand();
@@ -133,7 +137,7 @@ namespace EnvelopeASP.Models
 
         public static async Task Del_Envelope(uint uID, ushort eNumber)
         {
-            using var connection = new MySqlConnection(ConnectionString);
+            using var connection = new MySqlConnection(_connectionString);
             var openTask = connection.OpenAsync();
 
             using var command = connection.CreateCommand();
@@ -154,7 +158,7 @@ namespace EnvelopeASP.Models
 
         public static async Task Ins_EnvelopeTransaction(uint uID, ushort eNumber, int amount, DateTime date, string note)
         {
-            using var connection = new MySqlConnection(ConnectionString);
+            using var connection = new MySqlConnection(_connectionString);
             var openTask = connection.OpenAsync();
 
             using var command = connection.CreateCommand();
@@ -178,7 +182,7 @@ namespace EnvelopeASP.Models
 
         public static async Task Upd_EnvelopeTransaction(uint uID, ushort eNumber, uint tNumber, int amount, DateTime date, string note)
         {
-            using var connection = new MySqlConnection(ConnectionString);
+            using var connection = new MySqlConnection(_connectionString);
             var openTask = connection.OpenAsync();
 
             using var command = connection.CreateCommand();
@@ -203,7 +207,7 @@ namespace EnvelopeASP.Models
 
         public static async Task Del_EnvelopeTransaction(uint uID, ushort eNumber, uint tNumber)
         {
-            using var connection = new MySqlConnection(ConnectionString);
+            using var connection = new MySqlConnection(_connectionString);
             var openTask = connection.OpenAsync();
 
             using var command = connection.CreateCommand();
@@ -225,7 +229,7 @@ namespace EnvelopeASP.Models
 
         public static async Task<List<Envelope>> Sel_Envelope_Summary(uint uID)
         {
-            using var connection = new MySqlConnection(ConnectionString);
+            using var connection = new MySqlConnection(_connectionString);
             var openTask = connection.OpenAsync();
 
             using var command = connection.CreateCommand();
@@ -255,9 +259,9 @@ namespace EnvelopeASP.Models
             return envelopes;
         }
 
-        public static async Task<List<Transaction>> Sel_Transactions(uint uID, ushort envelopeNumber)
+        public static async Task<Sel_Transactions_Result> Sel_Transactions(uint uID, ushort envelopeNumber, uint limitNum, uint page)
         {
-            using var connection = new MySqlConnection(ConnectionString);
+            using var connection = new MySqlConnection(_connectionString);
             var openTask = connection.OpenAsync();
 
             using var command = connection.CreateCommand();
@@ -267,30 +271,35 @@ namespace EnvelopeASP.Models
 
             command.Parameters.Add(new MySqlParameter("uID", uID));
             command.Parameters.Add(new MySqlParameter("eNumber", envelopeNumber));
+            command.Parameters.Add(new MySqlParameter("limitNum", limitNum));
+            command.Parameters.Add(new MySqlParameter("offsetNum", limitNum * (page-1)));
 
             await openTask;
 
             using var reader = await command.ExecuteReaderAsync();
 
             var transactions = new List<Transaction>();
-
-            while (reader.Read())
+            
+            while (await reader.ReadAsync())
             {
                 double a = Convert.ToDouble(reader.GetInt32(1)) / 100.0;
 
                 var e = new Transaction(reader.GetUInt32(0), a, reader.GetDateTime(2), reader.GetString(3));
                 transactions.Add(e);
             }
+            await reader.NextResultAsync();
+            await reader.ReadAsync();
+            var numOfTransactions = Convert.ToUInt32(reader[0]);
 
             await reader.CloseAsync();
             await connection.CloseAsync();
 
-            return transactions;
+            return new Sel_Transactions_Result(numOfTransactions, transactions);
         }
 
         public static async Task<Transaction?> Sel_Transaction(uint uID, ushort envelopeNumber, uint tNumber)
         {
-            using var connection = new MySqlConnection(ConnectionString);
+            using var connection = new MySqlConnection(_connectionString);
             var openTask = connection.OpenAsync();
 
             using var command = connection.CreateCommand();
@@ -324,7 +333,7 @@ namespace EnvelopeASP.Models
 
         public static async Task<bool> Transfer(uint uID, ushort eSourceNumber, ushort eDestinationNumber, int amount)
         {
-            using var connection = new MySqlConnection(ConnectionString);
+            using var connection = new MySqlConnection(_connectionString);
             var openTask = connection.OpenAsync();
 
             using var command = connection.CreateCommand();

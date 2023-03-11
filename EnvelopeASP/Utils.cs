@@ -6,6 +6,7 @@ namespace EnvelopeASP
     public static class Utils
     {
         public const string LAYOUT = "_Layout";
+        public const int DEFAULT_PAGINATION_SIZE = 50;
         public static uint GetUserIDFromClaims(ClaimsPrincipal principal)
         {
             var idClaim = principal.Claims.First(f => f.Type == ClaimTypes.NameIdentifier);

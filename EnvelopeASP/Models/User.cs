@@ -1,15 +1,18 @@
 ﻿namespace EnvelopeASP.Models
 {
-    public class User
+    public sealed class User
     {
-        public uint Id { get; set; }
-        public string PasswordHash { get; set; }
-        public DateTime LockoutExpiry { get; set; }
+        public uint Id { get; private set; }
+        public byte[] PasswordHash { get; private set; }
+        public DateTime LockoutExpiry { get; private set; }
+        public PasswordConfig PasswordConfig { get; private set; }
 
-        public User(uint Id, string PasswordHash, DateTime LockoutExpiry) {
+        public User(uint Id, byte[] PasswordHash, DateTime LockoutExpiry, PasswordConfig passwordConfig)
+        {
             this.Id = Id;
             this.PasswordHash = PasswordHash;
             this.LockoutExpiry = LockoutExpiry;
+            PasswordConfig = passwordConfig;
         }
     }
 }

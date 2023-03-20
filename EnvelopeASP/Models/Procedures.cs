@@ -1,4 +1,5 @@
 ﻿using MySqlConnector;
+using System.Data;
 
 namespace EnvelopeASP.Models
 {
@@ -10,7 +11,7 @@ namespace EnvelopeASP.Models
             _connectionString = connectionString;
         }
 
-        public static async Task<bool> InsertUser(string email, string hash)
+        public static async Task<bool> InsertUser(string email, byte[] passwordHash, PasswordConfig passwordConfig)
         {
             using var connection = new MySqlConnection(_connectionString);
 
@@ -20,7 +21,11 @@ namespace EnvelopeASP.Models
             command.CommandType = System.Data.CommandType.StoredProcedure;
 
             command.Parameters.Add(new MySqlParameter("e", email));
-            command.Parameters.Add(new MySqlParameter("p", hash));
+            command.Parameters.Add(new MySqlParameter("p", passwordHash) { MySqlDbType = MySqlDbType.Binary });
+            command.Parameters.Add(new MySqlParameter("s", passwordConfig.Salt) { MySqlDbType = MySqlDbType.Binary });
+            command.Parameters.Add(new MySqlParameter("m", passwordConfig.MiB));
+            command.Parameters.Add(new MySqlParameter("i", passwordConfig.Iterations));
+            command.Parameters.Add(new MySqlParameter("dop", passwordConfig.DegreeOfParallelism));
 
             var openTask = connection.OpenAsync();
 
@@ -52,7 +57,12 @@ namespace EnvelopeASP.Models
             User? user = null;
 
             while(reader.Read()) {
-                user = new User(reader.GetUInt32(0), reader.GetString(1), reader.GetDateTime(2));
+                byte[] passwordHash = new byte[PasswordConfig.HASH_OUTPUT_SIZE];
+                byte[] salt = new byte[PasswordConfig.SALT_SIZE];
+                reader.GetBytes(1, 0, passwordHash, 0, passwordHash.Length);
+                reader.GetBytes(2, 0, salt, 0, salt.Length);
+                var passwordConfig = new PasswordConfig(reader.GetByte(3), reader.GetByte(4), reader.GetByte(5), salt);
+                user = new User(reader.GetUInt32(0), passwordHash, reader.GetDateTime(6), passwordConfig);
             }
 
             await reader.CloseAsync();

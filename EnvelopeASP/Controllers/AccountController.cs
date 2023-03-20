@@ -24,13 +24,19 @@ namespace EnvelopeASP.Controllers
             if(Request.Method== "POST" && ModelState.IsValid)
             {
                 model.Email = model.Email.Trim();
+                if(model.Password.Length > 1024)
+                {
+                    ViewBag.Error = "The password is a bit big, rejected.";
+                    return View(model);
+                }
                 if(model.Password != model.ConfirmPassword)
                 {
                     ViewBag.Error = "Passwords do not match";
                     return View(model);
                 }
-                var hash = BCrypt.Net.BCrypt.EnhancedHashPassword(model.Password);
-                await Procedures.InsertUser(model.Email, hash);
+                var passwordConfig = new PasswordConfig();
+                var hash = passwordConfig.GenerateHash(model.Password);
+                await Procedures.InsertUser(model.Email, hash, passwordConfig);
 
                 return Redirect("Login");
             } else
@@ -46,7 +52,7 @@ namespace EnvelopeASP.Controllers
             {
                 ReturnUrl = "/";
             }
-            if (User.Identity.IsAuthenticated)
+            if (User.Identity is not null && User.Identity.IsAuthenticated)
             {
                 return Redirect(ReturnUrl);
             }
@@ -58,21 +64,25 @@ namespace EnvelopeASP.Controllers
 
                 if (dbUserN != null)
                 {
-                    var isValid = DateTime.UtcNow > dbUserN.LockoutExpiry && BCrypt.Net.BCrypt.EnhancedVerify(model.Password, dbUserN.PasswordHash);
+                    var isValid = DateTime.UtcNow > dbUserN.LockoutExpiry && dbUserN.PasswordConfig.Verify(model.Password, dbUserN.PasswordHash);
 
                     await Procedures.Upd_User_Login(dbUserN.Id, isValid);
 
-                    var claims = new Claim[2];
-                    claims[0] = new Claim(ClaimTypes.NameIdentifier, dbUserN.Id.ToString());
-                    claims[1] = new Claim(ClaimTypes.Name, model.Email);
+                    if (isValid)
+                    {
+                        var claims = new Claim[2];
+                        claims[0] = new Claim(ClaimTypes.NameIdentifier, dbUserN.Id.ToString());
+                        claims[1] = new Claim(ClaimTypes.Name, model.Email);
 
-                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                        var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-                    var principle = new ClaimsPrincipal(claimsIdentity);
+                        var principle = new ClaimsPrincipal(claimsIdentity);
 
-                    await HttpContext.SignInAsync(principle);
+                        await HttpContext.SignInAsync(principle);
+
+                        return Redirect(ReturnUrl);
+                    }
                     
-                    return Redirect(ReturnUrl);
                 }
 
                 return View(model);

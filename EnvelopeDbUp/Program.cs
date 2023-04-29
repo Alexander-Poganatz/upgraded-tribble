@@ -22,6 +22,21 @@ var appsettings = new ConfigurationBuilder()
 
 var connectionString = appsettings["dbConnection"];
 
+var iniPath = appsettings["dbINIPath"];
+if(string.IsNullOrWhiteSpace(iniPath) is false)
+{
+    var iniConfig = new ConfigurationBuilder().AddIniFile(iniPath).Build();
+    var mariaEnvelopeSection = iniConfig.GetSection(appsettings["dbINISection"] ?? "MariaEnvelope");
+    if (mariaEnvelopeSection != null)
+    {
+        var serverName = mariaEnvelopeSection["Servername"];
+        var databaseName = mariaEnvelopeSection["Database"];
+        var uid = mariaEnvelopeSection["UID"];
+        var pwd = mariaEnvelopeSection["PWD"];
+        connectionString = $"server={serverName};uid={uid};pwd={pwd};database={databaseName};";
+    }
+}
+
 if (string.IsNullOrEmpty(connectionString))
 {
     Console.WriteLine("Error: no connection string is provided");

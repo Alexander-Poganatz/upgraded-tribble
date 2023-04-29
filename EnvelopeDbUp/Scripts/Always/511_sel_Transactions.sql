@@ -12,6 +12,7 @@ BEGIN
 	FROM envelope e
 	INNER JOIN envelopetransaction t ON e.EnvelopeID = t.EnvelopeID
 	WHERE UserID = uID AND EnvelopeNumber = eNumber
+	ORDER BY 1 DESC
 	LIMIT limitNum OFFSET offsetNum;
 	
 	SELECT COUNT(*) AS NumberOfTransactions

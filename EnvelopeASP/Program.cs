@@ -1,9 +1,29 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 var builder = WebApplication.CreateBuilder(args);
+{
+    var iniPath = builder.Configuration["dbINIPath"];
+    if (string.IsNullOrWhiteSpace(iniPath) is false)
+    {
+        builder.Configuration.AddIniFile(iniPath, true);
+    }
+}
 
-EnvelopeASP.Models.Procedures.SetConnectionString(builder.Configuration["dbConnection"] ?? string.Empty);
+var connectionString = builder.Configuration["dbConnection"] ?? string.Empty;
+{
+    var mariaEnvelopeSection = builder.Configuration.GetSection("MariaEnvelope");
+    if(mariaEnvelopeSection != null)
+    {
+        var serverName = mariaEnvelopeSection["Servername"];
+        var databaseName = mariaEnvelopeSection["Database"];
+        var uid = mariaEnvelopeSection["UID"];
+        var pwd = mariaEnvelopeSection["PWD"];
+        connectionString = $"server={serverName};uid={uid};pwd={pwd};database={databaseName};";
+    }
+}
+
+
+EnvelopeASP.Models.Procedures.SetConnectionString(connectionString);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

@@ -21,3 +21,20 @@ Also I don't know webpack and I don't want to learn webpack.
 ### Picnic.css
 I wanted something simple and smaller than bootstrap that still has all the features I could use.
 
+## AdminPasswordRecovery
+A console app to allow a local admin to reset a password.
+The console app expects two arguments: the path to an ini file, and a user "email"
+
+
+## Ini File Configuration
+Ini is used because its easy to just have an ini file lying around that everything has a parser for and
+can use in python projects that use odbc on linux.
+```
+[MariaEnvelope]
+Servername= database_address
+Database=envelope_database_name
+UID=sql_username
+PWD=sql_password
+```
+The EnvelopeDbUp app.settings has dbINISection field in case you want the envelope app to use a 
+different sql user than what the website would use.

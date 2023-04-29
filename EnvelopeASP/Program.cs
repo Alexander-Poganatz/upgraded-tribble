@@ -18,7 +18,12 @@ var connectionString = builder.Configuration["dbConnection"] ?? string.Empty;
         var databaseName = mariaEnvelopeSection["Database"];
         var uid = mariaEnvelopeSection["UID"];
         var pwd = mariaEnvelopeSection["PWD"];
-        connectionString = $"server={serverName};uid={uid};pwd={pwd};database={databaseName};";
+        // Somehow get to here even though no section is present
+        if(serverName != null)
+        {
+            connectionString = $"server={serverName};uid={uid};pwd={pwd};database={databaseName};";
+        }
+
     }
 }
 

@@ -8,20 +8,14 @@ html {
   }
 }
 
-html {
-  position: relative;
-  min-height: 100%;
-}
-
 body {
     max-width: 768px;
     margin: auto;
     margin-top: 60px;
 }
 
-/*Copied from the _Layout.css file */
 .footer {
-    position: absolute;
+    position: fixed;
     bottom: 0;
     white-space: nowrap;
     line-height: 60px;

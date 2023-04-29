@@ -44,15 +44,15 @@
                     <td>@r.Date.ToString("yyyy-MM-dd")</td>
                     <td>
                         <noscript>
-                            <a href="/Transaction/Delete/@Model.Item1/@r.TransactionNumber" class="button warning">Delete</a>
+                            <a href="/Transaction/Delete/@Model.Item1/@r.TransactionNumber" title="Delete Transaction">&#10060;</a>
                         </noscript>
-                        <label for="modal1" hx-get="/Transaction/Delete/@Model.Item1/@r.TransactionNumber" hx-target="#modalBody" class="button warning js-on">Delete</label>
+                        <label for="modal1" hx-get="/Transaction/Delete/@Model.Item1/@r.TransactionNumber" hx-target="#modalBody" class="js-on" title="Delete Transaction">&#10060;</label>
                     </td>
                     <td>
                         <noscript>
-                            <a href="/Transaction/Update/@Model.Item1/@r.TransactionNumber" class="button">Update</a>
+                            <a href="/Transaction/Update/@Model.Item1/@r.TransactionNumber" class="button" title="Update Transaction">&#128397;</a>
                         </noscript>
-                        <label for="modal1" hx-get="/Transaction/Update/@Model.Item1/@r.TransactionNumber" hx-target="#modalBody" class="button js-on">Update</label>
+                        <label for="modal1" hx-get="/Transaction/Update/@Model.Item1/@r.TransactionNumber" hx-target="#modalBody" class="button js-on" title="Update Transaction">&#128397;</label>
                     </td>
                 </tr>
             }

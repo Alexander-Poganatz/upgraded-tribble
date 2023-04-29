@@ -32,17 +32,17 @@
                     <td>@r.Name</td>
                     <td>@r.Amount</td>
                     <td>
-                        <noscript><a href="/Envelope/Delete/@r.Number?name=@System.Web.HttpUtility.UrlEncode(r.Name)" class="error">Delete</a></noscript>
-                        <label for="modal1" class="error js-on" hx-get="/Envelope/Delete/@r.Number?name=@System.Web.HttpUtility.UrlEncode(r.Name)" hx-target="#modalBody">Delete</label>
+                        <noscript><a href="/Envelope/Delete/@r.Number?name=@System.Web.HttpUtility.UrlEncode(r.Name)" class="error" title="Delete Envelope">&#10060;</a></noscript>
+                        <label for="modal1" class="error js-on" hx-get="/Envelope/Delete/@r.Number?name=@System.Web.HttpUtility.UrlEncode(r.Name)" hx-target="#modalBody" title="Delete Envelope">&#10060;</label>
                     </td>
                     <td>
                         <noscript>
-                            <a href="/Envelope/Update/@r.Number?name=@System.Web.HttpUtility.UrlEncode(r.Name)" class="button">Update</a>
+                            <a href="/Envelope/Update/@r.Number?name=@System.Web.HttpUtility.UrlEncode(r.Name)" class="button" title="Update Envelope Name">&#128397;</a>
                         </noscript>
-                        <label for="modal1" class="button js-on" hx-get="/Envelope/Update/@r.Number?name=@System.Web.HttpUtility.UrlEncode(r.Name)" hx-target="#modalBody">Update</label>
+                        <label for="modal1" class="button js-on" hx-get="/Envelope/Update/@r.Number?name=@System.Web.HttpUtility.UrlEncode(r.Name)" hx-target="#modalBody" title="Update Envelope Name">&#128397;</label>
                     </td>
                     <td>
-                        <a href="/Transaction/Index/@r.Number">View Transactions</a>
+                        <a href="/Transaction/Index/@r.Number" title="View Transactions">&#128233;</a>
                     </td>
                 </tr>
             }

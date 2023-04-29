@@ -38,6 +38,33 @@ namespace EnvelopeASP.Models
             return rowsInserted > 0;
         }
 
+        public static async Task<bool> UpdateUserPassword(uint uid, byte[] passwordHash, PasswordConfig passwordConfig)
+        {
+            using var connection = new MySqlConnection(_connectionString);
+
+            using var command = connection.CreateCommand();
+
+            command.CommandText = "upd_User_Password";
+            command.CommandType = System.Data.CommandType.StoredProcedure;
+
+            command.Parameters.Add(new MySqlParameter("uid", uid));
+            command.Parameters.Add(new MySqlParameter("p", passwordHash) { MySqlDbType = MySqlDbType.Binary });
+            command.Parameters.Add(new MySqlParameter("s", passwordConfig.Salt) { MySqlDbType = MySqlDbType.Binary });
+            command.Parameters.Add(new MySqlParameter("m", passwordConfig.MiB));
+            command.Parameters.Add(new MySqlParameter("i", passwordConfig.Iterations));
+            command.Parameters.Add(new MySqlParameter("dop", passwordConfig.DegreeOfParallelism));
+
+            var openTask = connection.OpenAsync();
+
+            await openTask;
+
+            var rowsInserted = await command.ExecuteNonQueryAsync();
+
+            await connection.CloseAsync();
+
+            return rowsInserted > 0;
+        }
+
         public static async Task<User?> Sel_UserByEmail(string email)
         {
             using var connection = new MySqlConnection(_connectionString);

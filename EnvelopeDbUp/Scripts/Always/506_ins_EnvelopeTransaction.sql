@@ -10,9 +10,9 @@ CREATE PROCEDURE ins_EnvelopeTransaction(
 	, IN tNote NVARCHAR(50)
 )
 BEGIN
-	SELECT @eID := EnvelopeID FROM envelope WHERE UserID = uID AND envelopeNumber = eNumber;
-	SELECT @newNum := IFNULL(MAX(TransactionNumber),0) + 1 FROM envelopetransaction WHERE EnvelopeID = @eID;
-	INSERT INTO envelopetransaction(EnvelopeID, TransactionNumber, TransactionAmount, TransactionDate, Note)
+	SELECT @eID := EnvelopeID FROM Envelope WHERE UserID = uID AND envelopeNumber = eNumber;
+	SELECT @newNum := IFNULL(MAX(TransactionNumber),0) + 1 FROM EnvelopeTransaction WHERE EnvelopeID = @eID;
+	INSERT INTO EnvelopeTransaction(EnvelopeID, TransactionNumber, TransactionAmount, TransactionDate, Note)
 	VALUES(@eID, @newNum, amount, tDate, tNote);
 	SELECT @newNum;
 END //

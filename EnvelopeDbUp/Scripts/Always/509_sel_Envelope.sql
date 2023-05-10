@@ -7,7 +7,7 @@ CREATE PROCEDURE sel_Envelope(
 )
 BEGIN
 	SELECT EnvelopeName
-	FROM envelope
+	FROM Envelope
 	WHERE UserID = uID AND EnvelopeNumber = eNumber;
 END //
 

@@ -33,7 +33,7 @@ if(string.IsNullOrWhiteSpace(iniPath) is false)
         var databaseName = mariaEnvelopeSection["Database"];
         var uid = mariaEnvelopeSection["UID"];
         var pwd = mariaEnvelopeSection["PWD"];
-        connectionString = $"server={serverName};uid={uid};pwd={pwd};database={databaseName};";
+        connectionString = $"server={serverName};uid={uid};pwd={pwd};database={databaseName};Allow User Variables=true;";
     }
 }
 

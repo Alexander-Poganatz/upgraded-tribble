@@ -19,8 +19,8 @@ BEGIN
 	ELSE
 		START TRANSACTION;
 	
-		CALL ins_EnvelopeTransaction(uID, eSourceNumber, ABS(amount) * -1, UTC_DATE(),CONCAT('Transfer to ', (SELECT EnvelopeName FROM envelope WHERE UserID = uID AND EnvelopeNumber = eDestinationNumber)));
-		CALL ins_EnvelopeTransaction(uID, eDestinationNumber, ABS(amount), UTC_DATE(),CONCAT('Transfer from ', (SELECT EnvelopeName FROM envelope WHERE UserID = uID AND EnvelopeNumber = eSourceNumber)));
+		CALL ins_EnvelopeTransaction(uID, eSourceNumber, ABS(amount) * -1, UTC_DATE(),CONCAT('Transfer to ', (SELECT EnvelopeName FROM Envelope WHERE UserID = uID AND EnvelopeNumber = eDestinationNumber)));
+		CALL ins_EnvelopeTransaction(uID, eDestinationNumber, ABS(amount), UTC_DATE(),CONCAT('Transfer from ', (SELECT EnvelopeName FROM Envelope WHERE UserID = uID AND EnvelopeNumber = eSourceNumber)));
 		COMMIT;
 		SELECT 1;
 	END IF;

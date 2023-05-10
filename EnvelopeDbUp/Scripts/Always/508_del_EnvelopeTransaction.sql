@@ -8,7 +8,7 @@ CREATE PROCEDURE del_EnvelopeTransaction(
 	,IN tNumber INT
 )
 BEGIN
-	DELETE FROM envelopetransaction WHERE EnvelopeID = (SELECT EnvelopeID FROM envelope WHERE UserID = uID AND EnvelopeNumber = eNumber) AND TransactionNumber = tNumber;
+	DELETE FROM EnvelopeTransaction WHERE EnvelopeID = (SELECT EnvelopeID FROM Envelope WHERE UserID = uID AND EnvelopeNumber = eNumber) AND TransactionNumber = tNumber;
 END //
 
 DELIMITER ;

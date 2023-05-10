@@ -5,6 +5,6 @@ CREATE TABLE EnvelopeTransaction(
 	,TransactionAmount INT SIGNED NOT NULL
 	,TransactionDate DATE NOT NULL
 	,Note NVARCHAR(50) NOT NULL
-	,CONSTRAINT FK_EnvelopeTransaction_Envelope FOREIGN KEY (EnvelopeID) REFERENCES envelope(EnvelopeID)
+	,CONSTRAINT FK_EnvelopeTransaction_Envelope FOREIGN KEY (EnvelopeID) REFERENCES Envelope(EnvelopeID)
 	,CONSTRAINT AK_EnvelopeTransaction_Envelope_Number UNIQUE(EnvelopeID, TransactionNumber)
 );

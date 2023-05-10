@@ -6,11 +6,11 @@ CREATE PROCEDURE upd_User_Login(
 )
 BEGIN
 	IF isValid = 1 THEN
-		UPDATE user SET FailedPasswordCount = 0 WHERE UserID = uID;
+		UPDATE User SET FailedPasswordCount = 0 WHERE UserID = uID;
 	ELSE
-		UPDATE user SET FailedPasswordCount = FailedPasswordCount + 1 WHERE UserID = uID AND FailedPasswordCount < 1000;
+		UPDATE User SET FailedPasswordCount = FailedPasswordCount + 1 WHERE UserID = uID AND FailedPasswordCount < 1000;
 	
-		UPDATE user SET LockoutExpiry = DATE_ADD(UTC_TIMESTAMP(), INTERVAL (FailedPasswordCount*FailedPasswordCount - 15) MINUTE) WHERE UserID = uID AND FailedPasswordCount > 4;
+		UPDATE User SET LockoutExpiry = DATE_ADD(UTC_TIMESTAMP(), INTERVAL (FailedPasswordCount*FailedPasswordCount - 15) MINUTE) WHERE UserID = uID AND FailedPasswordCount > 4;
 	END IF;
 END //
 

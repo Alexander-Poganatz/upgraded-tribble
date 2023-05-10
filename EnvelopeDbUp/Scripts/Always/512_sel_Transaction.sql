@@ -8,8 +8,8 @@ CREATE PROCEDURE sel_Transaction(
 )
 BEGIN
 	SELECT t.TransactionNumber, t.TransactionAmount, t.TransactionDate, t.Note
-	FROM envelope e
-	INNER JOIN envelopetransaction t ON e.EnvelopeID = t.EnvelopeID
+	FROM Envelope e
+	INNER JOIN EnvelopeTransaction t ON e.EnvelopeID = t.EnvelopeID
 	WHERE UserID = uID AND EnvelopeNumber = eNumber AND t.TransactionNumber = tNumber;
 END //
 

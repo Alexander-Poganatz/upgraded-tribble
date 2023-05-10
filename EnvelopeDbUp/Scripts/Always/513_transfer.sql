@@ -14,7 +14,7 @@ BEGIN
 		RESIGNAL;
 	END;
 	
-	IF (SELECT COUNT(*) FROM ENVELOPE WHERE UserID = uID AND EnvelopeNumber IN (eSourceNumber, eDestinationNumber)) <> 2 THEN
+	IF (SELECT COUNT(*) FROM Envelope WHERE UserID = uID AND EnvelopeNumber IN (eSourceNumber, eDestinationNumber)) <> 2 THEN
 		SELECT 0;
 	ELSE
 		START TRANSACTION;

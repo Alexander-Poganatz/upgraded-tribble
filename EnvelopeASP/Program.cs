@@ -40,26 +40,27 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
     });
 
-//bool useForwardHeaders = Convert.ToBoolean(builder.Configuration["useForwardHeaders"]);
+
+
+bool useForwardHeaders = Convert.ToBoolean(builder.Configuration["useForwardHeaders"]);
 bool enforceHTTPSRedirection = Convert.ToBoolean(builder.Configuration["enforceHTTPSRedirection"]);
 
 var app = builder.Build();
 
-// I started copying from Microsoft tutorial, but after looking at what I was doing, I currently have no use for originating ip addresses and protocols.
-/*
-if (useForwardHeaders)
-{
-    app.UseForwardedHeaders(new ForwardedHeadersOptions
-    {
-        ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor | Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto
-    });
-}
-*/
+
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
+    if (useForwardHeaders)
+    {
+        app.UseForwardedHeaders(new ForwardedHeadersOptions
+        {
+            ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto
+        });
+    }
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }

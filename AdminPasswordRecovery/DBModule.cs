@@ -15,7 +15,7 @@ namespace AdminPasswordRecovery
             dbConnection.Open();
 
             var command = dbConnection.CreateCommand();
-            command.CommandText = "SELECT UserID, LENGTH(PasswordHash) AS PasswordLength, LENGTH(PasswordSalt) AS SaltLength, Mib, Iterations, DegreeOfParallelism FROM `user` WHERE Email = ?e";
+            command.CommandText = "SELECT UserID, LENGTH(PasswordHash) AS PasswordLength, LENGTH(PasswordSalt) AS SaltLength, Mib, Iterations, DegreeOfParallelism FROM `User` WHERE Email = ?e";
             command.Parameters.AddWithValue("e", email);
 
             var reader = command.ExecuteReader();
@@ -39,7 +39,7 @@ namespace AdminPasswordRecovery
             dbConnection.Open();
 
             var command = dbConnection.CreateCommand();
-            command.CommandText = "UPDATE `user` SET PasswordHash = ?p, PasswordSalt = ?s WHERE UserID = ?i";
+            command.CommandText = "UPDATE `User` SET PasswordHash = ?p, PasswordSalt = ?s WHERE UserID = ?i";
             command.Parameters.AddWithValue("p", newPassword);
             command.Parameters.AddWithValue("s", newSalt);
             command.Parameters.AddWithValue("i", uid);

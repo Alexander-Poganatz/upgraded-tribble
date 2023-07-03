@@ -11,7 +11,7 @@ CREATE PROCEDURE ins_User(
 	,IN dop TINYINT UNSIGNED
 	)
 BEGIN
-	INSERT INTO user(Email, PasswordHash, PasswordSalt, MiB, Iterations, DegreeOfParallelism) VALUES(TRIM(e), p, s, m, i, dop);
+	INSERT INTO User(Email, PasswordHash, PasswordSalt, MiB, Iterations, DegreeOfParallelism) VALUES(TRIM(e), p, s, m, i, dop);
 END //
 
 DELIMITER ;

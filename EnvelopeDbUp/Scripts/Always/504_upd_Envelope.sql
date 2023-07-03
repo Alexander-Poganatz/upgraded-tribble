@@ -7,7 +7,7 @@ CREATE PROCEDURE upd_Envelope(
 	,IN eName NVARCHAR(50)
 )
 BEGIN
-	UPDATE envelope SET EnvelopeName = eName WHERE UserID = uID AND EnvelopeNumber = eNumber;
+	UPDATE Envelope SET EnvelopeName = eName WHERE UserID = uID AND EnvelopeNumber = eNumber;
 END //
 
 DELIMITER ;

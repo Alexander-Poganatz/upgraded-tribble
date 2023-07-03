@@ -5,7 +5,7 @@ CREATE PROCEDURE sel_UserByEmail(
 	IN e NVARCHAR(255)
 )
 BEGIN
-	SELECT UserID, PasswordHash, PasswordSalt, MiB, Iterations, DegreeOfParallelism, LockoutExpiry FROM user WHERE Email = e;
+	SELECT UserID, PasswordHash, PasswordSalt, MiB, Iterations, DegreeOfParallelism, LockoutExpiry FROM User WHERE Email = e;
 END //
 
 DELIMITER ;

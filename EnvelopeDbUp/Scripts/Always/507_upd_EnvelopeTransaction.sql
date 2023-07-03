@@ -11,8 +11,8 @@ CREATE PROCEDURE upd_EnvelopeTransaction(
 	,IN tNote NVARCHAR(50)
 )
 BEGIN
-	UPDATE envelopetransaction SET TransactionAmount = amount, TransactionDate = tDate, Note = tNote
-	WHERE EnvelopeID = (SELECT EnvelopeID FROM envelope WHERE UserID = uID AND EnvelopeNumber = eNumber) AND TransactionNumber = tNumber;
+	UPDATE EnvelopeTransaction SET TransactionAmount = amount, TransactionDate = tDate, Note = tNote
+	WHERE EnvelopeID = (SELECT EnvelopeID FROM Envelope WHERE UserID = uID AND EnvelopeNumber = eNumber) AND TransactionNumber = tNumber;
 END //
 
 DELIMITER ;

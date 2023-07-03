@@ -11,7 +11,7 @@ CREATE PROCEDURE upd_User_Password(
 	,IN dop TINYINT UNSIGNED
 	)
 BEGIN
-	UPDATE user SET PasswordHash = p, PasswordSalt = s, MiB = m, Iterations = i, DegreeOfParallelism = dop WHERE UserID = uid;
+	UPDATE User SET PasswordHash = p, PasswordSalt = s, MiB = m, Iterations = i, DegreeOfParallelism = dop WHERE UserID = uid;
 END //
 
 DELIMITER ;

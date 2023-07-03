@@ -8,8 +8,8 @@ CREATE PROCEDURE ins_Envelope(
 	,IN eName NVARCHAR(50)
 )
 BEGIN
-	SELECT @newNum := IFNULL(MAX(EnvelopeNumber),0) + 1 FROM envelope WHERE UserID = uID;
-	INSERT INTO envelope(UserID, EnvelopeNumber, EnvelopeName) VALUES
+	SELECT @newNum := IFNULL(MAX(EnvelopeNumber),0) + 1 FROM Envelope WHERE UserID = uID;
+	INSERT INTO Envelope(UserID, EnvelopeNumber, EnvelopeName) VALUES
 	(uID, @newNum, eName);
 	
 	SELECT @newNum;

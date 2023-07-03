@@ -9,15 +9,15 @@ CREATE PROCEDURE sel_Transactions(
 )
 BEGIN
 	SELECT t.TransactionNumber, t.TransactionAmount, t.TransactionDate, t.Note
-	FROM envelope e
-	INNER JOIN envelopetransaction t ON e.EnvelopeID = t.EnvelopeID
+	FROM Envelope e
+	INNER JOIN EnvelopeTransaction t ON e.EnvelopeID = t.EnvelopeID
 	WHERE UserID = uID AND EnvelopeNumber = eNumber
 	ORDER BY 1 DESC
 	LIMIT limitNum OFFSET offsetNum;
 	
 	SELECT COUNT(*) AS NumberOfTransactions
-	FROM envelope e
-	INNER JOIN envelopetransaction t ON e.EnvelopeID = t.EnvelopeID
+	FROM Envelope e
+	INNER JOIN EnvelopeTransaction t ON e.EnvelopeID = t.EnvelopeID
 	WHERE UserID = uID AND EnvelopeNumber = eNumber;
 END //
 

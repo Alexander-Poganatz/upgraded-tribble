@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <UserSecretsId>7fd6e6f3-ad38-4e4d-aa25-5d3fe0b42e8a</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="DbConnection.fs" />
+    <Compile Include="Models.fs" />
+    <Compile Include="Password.fs" />
+    <Compile Include="Utils.fs" />
+    <Compile Include="Procedures.fs" />
+    <Compile Include="HTMXDefaultLayoutFilterAttribute.fs" />
+    <Compile Include="Controllers\TransactionController.fs" />
+    <Compile Include="Controllers\EnvelopeController.fs" />
+    <Compile Include="Controllers\AccountController.fs" />
+    <Compile Include="Controllers/HomeController.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Konscious.Security.Cryptography.Argon2" Version="1.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="7.0.8" />
+    <PackageReference Include="MySqlConnector" Version="2.2.6" />
+  </ItemGroup>
+
+</Project>

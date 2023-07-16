@@ -23,3 +23,9 @@ module Utils
 
     let htmxRequestLayout (httpContext:HttpContext) =
         if requestIsHTMX httpContext then null else Layout
+
+    // Used for match expressions
+    let (|IgnoreCaseEqual|_|) (s1:string) (s2:string) =
+        match System.String.Compare(s1, s2, true) with
+        | 0 -> Some()
+        | _ -> None

@@ -1,8 +1,5 @@
 ﻿module Models
 
-open System.ComponentModel.DataAnnotations
-open Microsoft.AspNetCore.Mvc.Rendering
-
 type ErrorViewModel =
     { RequestId: string }
 
@@ -12,25 +9,30 @@ type ErrorViewModel =
 type Envelope = { Number: uint16; Name: string; Amount: double }
 
 [<CLIMutable>]
-type Login = { [<Required(AllowEmptyStrings = false)>]Email: string; [<Required(AllowEmptyStrings = false)>] Password: string; }
+type EnvelopeName = { EnvelopeName: string }
+
+[<CLIMutable>]
+type Login = { Email: string; Password: string; }
+
+type LoginSignUpErrors = { EmailError: string; PasswordError: string; ConfirmPasswordError: string }
 
 [<CLIMutable>]
 type PasswordConfig = { MiB: byte; Iterations: byte; DegreeOfParallism: byte; Salt: byte array }
 
 [<CLIMutable>]
-type SignUp = { 
-    [<Required(AllowEmptyStrings = false)>]Email: string; 
-    [<Required(AllowEmptyStrings = false)>]Password: string; 
-    [<Required(AllowEmptyStrings = false)>]ConfirmPassword: string; }
+type SignUp = { Email: string; Password: string; ConfirmPassword: string; }
 
 [<CLIMutable>]
 type Transaction = { TransactionNumber: uint; Amount: double; Date: System.DateTime; Note: string; }
 
 [<CLIMutable>]
-type Transfer = { DestinationNumber: System.Nullable<uint16>; Envelopes: SelectListItem list; Amount: double; }
+type Transfer = { DestinationNumber: uint16; Amount: double; }
 
 [<CLIMutable>]
 type Sel_Transactions_Result = { NumberOfAllTransactions: uint; Transactions: Transaction list}
 
 [<CLIMutable>]
 type User = { Id: uint; PasswordHash: byte array; LockoutExpiry: System.DateTime; PasswordConfig: PasswordConfig; }
+
+[<CLIMutable>]
+type YesNo = { YesNo: string }

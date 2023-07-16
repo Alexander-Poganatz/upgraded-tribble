@@ -13,7 +13,7 @@ let private AddParamWithTypeToCommand (command:MySqlCommand) (paramName:string) 
     command.Parameters.Add param
 
 let InsertUser (dbConnectionGetter:DbConnection.IDbConnectionGetter) email passwordHash (passwordConfig:PasswordConfig) =
-    async {
+    task {
         use connection = dbConnectionGetter.GetNewConnection()
 
         let command = connection.CreateCommand()
@@ -29,17 +29,17 @@ let InsertUser (dbConnectionGetter:DbConnection.IDbConnectionGetter) email passw
         AddParamWithTypeToCommand command "dop" passwordConfig.DegreeOfParallism MySqlDbType.UByte |> ignore
 
     
-        do! connection.OpenAsync() |> Async.AwaitTask
+        do! connection.OpenAsync()
 
-        let! rowsInserted = command.ExecuteNonQueryAsync() |> Async.AwaitTask
+        let! rowsInserted = command.ExecuteNonQueryAsync()
 
-        do! connection.CloseAsync() |> Async.AwaitTask
+        do! connection.CloseAsync()
 
         return rowsInserted
     }
     
 let UpdateUserPassword (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid passwordHash (passwordConfig:PasswordConfig) =
-    async {
+    task {
         use connection = dbConnectionGetter.GetNewConnection()
 
         let command = connection.CreateCommand()
@@ -54,17 +54,17 @@ let UpdateUserPassword (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid
         AddParamWithTypeToCommand command "i" passwordConfig.Iterations MySqlDbType.UByte |> ignore
         AddParamWithTypeToCommand command "dop" passwordConfig.DegreeOfParallism MySqlDbType.UByte |> ignore
 
-        do! connection.OpenAsync() |> Async.AwaitTask
+        do! connection.OpenAsync()
 
-        let! rowsInserted = command.ExecuteNonQueryAsync() |> Async.AwaitTask
+        let! rowsInserted = command.ExecuteNonQueryAsync()
 
-        do! connection.CloseAsync() |> Async.AwaitTask
+        do! connection.CloseAsync()
 
         return rowsInserted
     }
 
 let Sel_UserByEmail (dbConnectionGetter:DbConnection.IDbConnectionGetter) email =
-    async {
+    task {
         use connection = dbConnectionGetter.GetNewConnection()
 
         let command = connection.CreateCommand()
@@ -75,12 +75,12 @@ let Sel_UserByEmail (dbConnectionGetter:DbConnection.IDbConnectionGetter) email 
         AddParamToCommand command "e" email |> ignore
 
     
-        do! connection.OpenAsync() |> Async.AwaitTask
+        do! connection.OpenAsync()
 
-        use! reader' = command.ExecuteReaderAsync() |> Async.AwaitTask
+        use! reader' = command.ExecuteReaderAsync()
         let reader = reader' :?> MySqlDataReader
 
-        let! userExists = reader.ReadAsync() |> Async.AwaitTask
+        let! userExists = reader.ReadAsync()
 
         let user = 
             if userExists then
@@ -94,14 +94,14 @@ let Sel_UserByEmail (dbConnectionGetter:DbConnection.IDbConnectionGetter) email 
             else
                 None
 
-        do! reader.CloseAsync() |> Async.AwaitTask
-        do! connection.CloseAsync() |> Async.AwaitTask
+        do! reader.CloseAsync()
+        do! connection.CloseAsync()
 
         return user
     }
 
 let Upd_User_Login (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid isValid =
-    async {
+    task {
         use connection = dbConnectionGetter.GetNewConnection()
 
         let command = connection.CreateCommand()
@@ -112,17 +112,17 @@ let Upd_User_Login (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid isV
         AddParamWithTypeToCommand command "uID" uid MySqlDbType.UInt32 |> ignore
         AddParamWithTypeToCommand command "isValid" isValid MySqlDbType.Bit |> ignore
 
-        do! connection.OpenAsync() |> Async.AwaitTask
+        do! connection.OpenAsync()
 
-        let! rowsInserted = command.ExecuteNonQueryAsync() |> Async.AwaitTask
+        let! rowsInserted = command.ExecuteNonQueryAsync()
 
-        do! connection.CloseAsync() |> Async.AwaitTask
+        do! connection.CloseAsync()
 
         return rowsInserted
     }
 
 let Ins_Envelope (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid eName =
-    async {
+    task {
         use connection = dbConnectionGetter.GetNewConnection()
 
         let command = connection.CreateCommand()
@@ -134,17 +134,17 @@ let Ins_Envelope (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid eName
         AddParamToCommand command "eName" eName |> ignore
 
     
-        do! connection.OpenAsync() |> Async.AwaitTask
+        do! connection.OpenAsync()
 
-        let! rowsInserted = command.ExecuteScalarAsync() |> Async.AwaitTask
+        let! rowsInserted = command.ExecuteScalarAsync()
 
-        do! connection.CloseAsync() |> Async.AwaitTask
+        do! connection.CloseAsync()
 
         return rowsInserted |> System.Convert.ToUInt16
     }
 
 let Upd_Envelope (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid eNumber newName =
-    async {
+    task {
         use connection = dbConnectionGetter.GetNewConnection()
 
         let command = connection.CreateCommand()
@@ -156,17 +156,17 @@ let Upd_Envelope (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid eNumb
         AddParamWithTypeToCommand command "eNumber" eNumber MySqlDbType.UInt16 |> ignore
         AddParamToCommand command "eName" newName |> ignore
 
-        do! connection.OpenAsync() |> Async.AwaitTask
+        do! connection.OpenAsync()
 
-        let! rowsInserted = command.ExecuteNonQueryAsync() |> Async.AwaitTask
+        let! rowsInserted = command.ExecuteNonQueryAsync()
 
-        do! connection.CloseAsync() |> Async.AwaitTask
+        do! connection.CloseAsync()
 
         return rowsInserted
     }
 
 let Del_Envelope (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid eNumber =
-    async {
+    task {
     
         use connection = dbConnectionGetter.GetNewConnection()
 
@@ -178,17 +178,17 @@ let Del_Envelope (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid eNumb
         AddParamWithTypeToCommand command "uID" uid MySqlDbType.UInt32 |> ignore
         AddParamWithTypeToCommand command "eNumber" eNumber MySqlDbType.UInt16 |> ignore
 
-        do! connection.OpenAsync() |> Async.AwaitTask
+        do! connection.OpenAsync()
 
-        let! rowsInserted = command.ExecuteNonQueryAsync() |> Async.AwaitTask
+        let! rowsInserted = command.ExecuteNonQueryAsync()
 
-        do! connection.CloseAsync() |> Async.AwaitTask
+        do! connection.CloseAsync()
 
         return rowsInserted
     }
 
 let Ins_EnvelopeTransaction (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid eNumber (amount:int) (date:System.DateTime) note =
-    async {
+    task {
         use connection = dbConnectionGetter.GetNewConnection()
 
         let command = connection.CreateCommand()
@@ -202,7 +202,7 @@ let Ins_EnvelopeTransaction (dbConnectionGetter:DbConnection.IDbConnectionGetter
         AddParamWithTypeToCommand command "tDate" date MySqlDbType.DateTime |> ignore
         AddParamToCommand command "tNote" note |> ignore
 
-        do! connection.OpenAsync() |> Async.AwaitTask
+        do! connection.OpenAsync()
 
         let! rowsInserted = command.ExecuteNonQueryAsync() |> Async.AwaitTask
 
@@ -212,7 +212,7 @@ let Ins_EnvelopeTransaction (dbConnectionGetter:DbConnection.IDbConnectionGetter
     }
 
 let Upd_EnvelopeTransaction (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid eNumber (tNumber:uint32) (amount:int) (date:System.DateTime) note =
-    async {
+    task {
         use connection = dbConnectionGetter.GetNewConnection()
 
         let command = connection.CreateCommand()
@@ -227,17 +227,17 @@ let Upd_EnvelopeTransaction (dbConnectionGetter:DbConnection.IDbConnectionGetter
         AddParamWithTypeToCommand command "tDate" date MySqlDbType.DateTime |> ignore
         AddParamToCommand command "tNote" note |> ignore
 
-        do! connection.OpenAsync() |> Async.AwaitTask
+        do! connection.OpenAsync()
 
-        let! rowsInserted = command.ExecuteNonQueryAsync() |> Async.AwaitTask
+        let! rowsInserted = command.ExecuteNonQueryAsync()
 
-        do! connection.CloseAsync() |> Async.AwaitTask
+        do! connection.CloseAsync()
 
         return rowsInserted
     }
 
 let Del_EnvelopeTransaction (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid eNumber (tNumber:uint32) =
-    async {
+    task {
         use connection = dbConnectionGetter.GetNewConnection()
 
         let command = connection.CreateCommand()
@@ -249,11 +249,11 @@ let Del_EnvelopeTransaction (dbConnectionGetter:DbConnection.IDbConnectionGetter
         AddParamWithTypeToCommand command "eNumber" eNumber MySqlDbType.UInt16 |> ignore
         AddParamWithTypeToCommand command "tNumber" tNumber MySqlDbType.UInt32 |> ignore
 
-        do! connection.OpenAsync() |> Async.AwaitTask
+        do! connection.OpenAsync()
 
-        let! rowsInserted = command.ExecuteNonQueryAsync() |> Async.AwaitTask
+        let! rowsInserted = command.ExecuteNonQueryAsync()
 
-        do! connection.CloseAsync() |> Async.AwaitTask
+        do! connection.CloseAsync()
 
         return rowsInserted
     }
@@ -361,7 +361,7 @@ let Sel_Transactions (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid e
     }
 
 let Sel_Transaction (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid envelopeNumber tNumber =
-    async {
+    task {
         use connection = dbConnectionGetter.GetNewConnection()
 
         let command = connection.CreateCommand()
@@ -373,12 +373,12 @@ let Sel_Transaction (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid en
         AddParamWithTypeToCommand command "eNumber" envelopeNumber MySqlDbType.UInt16 |> ignore
         AddParamWithTypeToCommand command "tNumber" tNumber MySqlDbType.UInt32 |> ignore
 
-        do! connection.OpenAsync() |> Async.AwaitTask
+        do! connection.OpenAsync()
 
-        use! reader' = command.ExecuteReaderAsync() |> Async.AwaitTask
+        use! reader' = command.ExecuteReaderAsync()
         let reader = reader' :?> MySqlDataReader
 
-        let! hasResult = reader.ReadAsync() |> Async.AwaitTask
+        let! hasResult = reader.ReadAsync()
 
         let result = 
             if hasResult then
@@ -388,14 +388,14 @@ let Sel_Transaction (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid en
             else 
                 None
 
-        do! reader.CloseAsync() |> Async.AwaitTask
-        do! connection.CloseAsync() |> Async.AwaitTask
+        do! reader.CloseAsync()
+        do! connection.CloseAsync()
 
         return result
     }
 
 let Transfer (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid eSourceNumber eDestinationNumber amount =
-    async {
+    task {
         use connection = dbConnectionGetter.GetNewConnection()
 
         let command = connection.CreateCommand()
@@ -408,11 +408,11 @@ let Transfer (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid eSourceNu
         AddParamWithTypeToCommand command "eDestinationNumber" eDestinationNumber MySqlDbType.UInt16 |> ignore
         AddParamWithTypeToCommand command "amount" amount MySqlDbType.Int32 |> ignore
 
-        do! connection.OpenAsync() |> Async.AwaitTask
+        do! connection.OpenAsync()
 
-        let! rowsInserted = command.ExecuteNonQueryAsync() |> Async.AwaitTask
+        let! rowsInserted = command.ExecuteNonQueryAsync()
 
-        do! connection.CloseAsync() |> Async.AwaitTask
+        do! connection.CloseAsync()
 
         return rowsInserted
     }

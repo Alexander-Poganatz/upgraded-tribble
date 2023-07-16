@@ -1,0 +1,21 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "htmx@1.9.2",
+      "destination": "wwwroot/lib/htmx/",
+      "files": [
+        "htmx.min.js",
+        "htmx.js"
+      ]
+    },
+    {
+      "library": "picnic@7.1.0",
+      "destination": "wwwroot/lib/picnic/",
+      "files": [
+        "picnic.min.css"
+      ]
+    }
+  ]
+}

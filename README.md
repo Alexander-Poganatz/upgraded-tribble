@@ -11,8 +11,8 @@ A newer version of EnvelopeBudget as a web site
 ### Maria DB/MySQL
 An easy to use database that I can get up and running on ARM64 Linux.
 
-### C# / dotnet
-I like C# and it works on Linux now, simple as.
+### F#
+Started with C# on this project, but decided to try something new. Other stuff I already built will use C# for now.
 
 ### HTMX
 Trying out a world where nice, modern looking webpages doesn't need a whole lot of custom JavaScript.

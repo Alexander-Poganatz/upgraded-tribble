@@ -34,9 +34,7 @@ let private layout (isAuthenticated) (titleStr:string) (content: XmlNode list) =
                 ]
             ]
             div [] [
-                div [ _style "height: 1em;" ] []
                 main [] content
-                div [ _style "height: 60px;" ] []
             ]
             footer [ _class "footer" ] [
                 div [ _class "container" ] [ rawText "&copy; 2023 - EnvelopeWeb" ]
@@ -166,7 +164,7 @@ let envelopeIndex (model:Models.Envelope list) =
             a [ _href "/Envelope/Add" ] [ encodedText "Add Envelope"]
         ]
         label [ _for "modal1"; _class "button js-on"; _hx_get "/Envelope/Add"; _hx_target "#modalBody" ] [ encodedText "Add Envelope" ]
-        div [ _style "height: 1em;" ] []
+        div [ _class "height-1em" ] []
         
         tableOrDiv
 
@@ -298,7 +296,7 @@ let transactionIndex (envelopeNum: uint16) (pagePath: string) (currentPageNumber
         ]
         label [ _for "modal1"; _hx_get transferUrl; _hx_target "#modalBody"; _class "button js-on" ] [ encodedText "Transfer"]
         label [ _for "modal1"; _hx_get addUrl; _hx_target "#modalBody"; _class "button js-on" ] [ encodedText "Add Transaction"]
-        div [ _style "height: 1em;" ] []
+        div [ _class "height-1em" ] []
         select [ _value (currentPageNumber.ToString()); _onchange "OnPageNumSelectChange(this)"; _class "js-on" ] optionsList
         tableOrDiv
         noscript [] anchorList

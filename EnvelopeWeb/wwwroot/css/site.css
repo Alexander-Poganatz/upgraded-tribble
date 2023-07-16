@@ -32,3 +32,16 @@ body {
 .js-off .js-on {
     display: none;
 }
+
+.height-1em {
+    height: 1em;
+}
+
+main {
+    margin-bottom: 60px;
+    margin-top: 1em;
+}
+
+.height-1em {
+    height: 1em;
+}

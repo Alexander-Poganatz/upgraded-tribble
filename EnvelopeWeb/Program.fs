@@ -93,7 +93,7 @@ module Program =
         let useForwardHeaders = Convert.ToBoolean(builder.Configuration["useForwardHeaders"])
         let enforceHTTPSRedirection = Convert.ToBoolean(builder.Configuration["enforceHTTPSRedirection"])
 
-        let dbConnectionGetter = new DbConnection.DbConnectionGetter(connectionString) :> DbConnection.IDbConnectionGetter
+        let dbConnectionGetter = new DbConnection.DbConnectionGetter(connectionString)
 
         builder.Services.AddSingleton(dbConnectionGetter) |> ignore
 

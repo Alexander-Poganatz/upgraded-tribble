@@ -63,7 +63,7 @@ let requireSignOut (next : HttpFunc) (ctx : HttpContext) =
     | true -> (redirectTo false "/") earlyReturn ctx
     | false -> next ctx
 
-let private attemptLogin (dbConnection: IDbConnectionGetter) (model: Login) (ctx: HttpContext) =
+let private attemptLogin (dbConnection: DbConnectionGetter) (model: Login) (ctx: HttpContext) =
     task {
         let errorModel = { 
                         EmailError = if System.String.IsNullOrWhiteSpace(model.Email) then "Name is required" else System.String.Empty;
@@ -109,7 +109,7 @@ let loginPostHandle (next : HttpFunc) (ctx : HttpContext) =
         let! modelResult = ctx.TryBindFormAsync<Login>()
         match modelResult with
         | Ok model -> 
-                        let dbConnection = ctx.GetService<IDbConnectionGetter>()
+                        let dbConnection = ctx.GetService<DbConnectionGetter>()
                         let! loginResult = attemptLogin dbConnection model ctx
                         match loginResult with
                         | Error e -> 
@@ -122,7 +122,7 @@ let loginPostHandle (next : HttpFunc) (ctx : HttpContext) =
             return! setStatusCode 400 next ctx
     }
 
-let private attemptSignup (dbConnection: IDbConnectionGetter) (model: SignUp) =
+let private attemptSignup (dbConnection: DbConnectionGetter) (model: SignUp) =
     task {
         let errorModel = { 
                         EmailError = if System.String.IsNullOrWhiteSpace(model.Email) then "Name is required" else System.String.Empty;
@@ -154,7 +154,7 @@ let signUpPostHandle (next : HttpFunc) (ctx : HttpContext) =
         let! modelResult = ctx.TryBindFormAsync<SignUp>()
         match modelResult with
         | Ok model -> 
-                        let dbConnection = ctx.GetService<IDbConnectionGetter>()
+                        let dbConnection = ctx.GetService<DbConnectionGetter>()
                         let! signUpResult = attemptSignup dbConnection model
                         match signUpResult with
                         | Error e -> 
@@ -165,7 +165,7 @@ let signUpPostHandle (next : HttpFunc) (ctx : HttpContext) =
             return! setStatusCode 400 next ctx
     }
     
-let attemptPasswordReset (dbConnection: IDbConnectionGetter) (model: SignUp) (ctx: HttpContext) =
+let attemptPasswordReset (dbConnection: DbConnectionGetter) (model: SignUp) (ctx: HttpContext) =
    task {
         let errorModel = { 
                         EmailError = if System.String.IsNullOrWhiteSpace(model.Email) then "Current password is required" else System.String.Empty;
@@ -209,7 +209,7 @@ let resetPasswordPostHandle (next : HttpFunc) (ctx : HttpContext) =
         let! modelResult = ctx.TryBindFormAsync<SignUp>()
         match modelResult with
         | Ok model -> 
-                        let dbConnection = ctx.GetService<IDbConnectionGetter>()
+                        let dbConnection = ctx.GetService<DbConnectionGetter>()
                         let! passwordResetResult = attemptPasswordReset dbConnection model ctx
                         match passwordResetResult with
                         | Error e ->
@@ -227,7 +227,7 @@ let resetPasswordPostHandle (next : HttpFunc) (ctx : HttpContext) =
 let envelopeIndexHandle (next : HttpFunc) (ctx : HttpContext) =
     task {
         let uid = Utils.getUserIDFromClaims ctx.User
-        let dbConnection = ctx.GetService<IDbConnectionGetter>()
+        let dbConnection = ctx.GetService<DbConnectionGetter>()
         let! envelopes = Procedures.Sel_Envelope_Summary dbConnection uid
         return! (htmlView (HTMLViews.envelopeIndex envelopes)) next ctx
     }
@@ -246,7 +246,7 @@ let envelopeAddPostHandle (next: HttpFunc) (ctx : HttpContext) =
         let! modelResult = ctx.TryBindFormAsync<EnvelopeName>()
         match modelResult with
         | Ok model -> 
-                        let dbConnection = ctx.GetService<IDbConnectionGetter>()
+                        let dbConnection = ctx.GetService<DbConnectionGetter>()
                         let uid = Utils.getUserIDFromClaims ctx.User
                         let! r = Procedures.Ins_Envelope dbConnection uid model.EnvelopeName
                         return! (redirectTo false "/Envelope") next ctx
@@ -276,9 +276,9 @@ let private envelopeUpdatePostHandle' (eidParam: int) (next: HttpFunc) (ctx : Ht
         let! modelResult = ctx.TryBindFormAsync<EnvelopeName>()
         match modelResult with
         | Ok model -> 
-                        let dbConnection = ctx.GetService<IDbConnectionGetter>()
+                        let dbConnection = ctx.GetService<DbConnectionGetter>()
                         let uid = Utils.getUserIDFromClaims ctx.User
-                        let eid = eidParam |> System.Convert.ToUInt16
+                        let eid = eidParam |> uint16
                         let! r = Procedures.Upd_Envelope dbConnection uid eid model.EnvelopeName
                         return! (redirectTo false "/Envelope") next ctx
         | Error e ->
@@ -323,7 +323,7 @@ let deleteEnvelopePostHandle (eid: int) (next : HttpFunc) (ctx : HttpContext) =
         | Ok model -> 
                         match model.YesNo with
                         | Utils.IgnoreCaseEqual "Yes" ->
-                            let dbConnection = ctx.GetService<IDbConnectionGetter>()
+                            let dbConnection = ctx.GetService<DbConnectionGetter>()
                             let uid = Utils.getUserIDFromClaims ctx.User
                             let! r = Procedures.Del_Envelope dbConnection uid eid
                             return! (redirectTo false "/Envelope") next ctx
@@ -347,15 +347,15 @@ let transactionGetHandle (eid32: int) (next : HttpFunc) (ctx : HttpContext) =
                     | false -> 1u
                     | true -> System.Math.Max(1u, n)
                     
-        let eid = eid32 |> System.Convert.ToUInt16
+        let eid = eid32 |> uint16
         let uid = Utils.getUserIDFromClaims ctx.User
-        let dbConnection = ctx.GetService<IDbConnectionGetter>()
+        let dbConnection = ctx.GetService<DbConnectionGetter>()
         let! transactionResult = Procedures.Sel_Transactions dbConnection uid eid Utils.DefaultPaginationSize page
         return! (htmlView (HTMLViews.transactionIndex eid ctx.Request.Path.Value page transactionResult)) next ctx
     }
 
 let private addTransactionGetHandle' (model: Models.Transaction) (eid32: int) (next : HttpFunc) (ctx : HttpContext) =
-    let eid = eid32 |> System.Convert.ToUInt16
+    let eid = eid32 |> uint16
     let antiForgeryTag = createAntiForgeryTokenNode ctx
     let view =
         if Utils.requestIsHTMX ctx then
@@ -370,14 +370,14 @@ let addTransactionGetHandle (eid32: int) (next : HttpFunc) (ctx : HttpContext) =
 
 let addTransactionPostHandle (eid32: int) (next : HttpFunc) (ctx : HttpContext) =
     task {
-        let eid = eid32 |> System.Convert.ToUInt16
+        let eid = eid32 |> uint16
         let! modelOption = ctx.TryBindFormAsync<Models.Transaction>()
 
         match modelOption with
         | Error e -> return! setStatusCode 400 next ctx
         | Ok model ->
             let uid = Utils.getUserIDFromClaims ctx.User
-            let dbConnection = ctx.GetService<IDbConnectionGetter>()
+            let dbConnection = ctx.GetService<DbConnectionGetter>()
             let amountInCents = Utils.doubleMoneyToCents model.Amount
             let! transactionResult = Procedures.Ins_EnvelopeTransaction dbConnection uid eid amountInCents model.Date model.Note
 
@@ -394,10 +394,10 @@ let addTransactionPostHandle (eid32: int) (next : HttpFunc) (ctx : HttpContext) 
 
 let updateTransactionGetHandle (eid32: int) (tid32: int) (next : HttpFunc) (ctx : HttpContext) =
     task {
-        let eid = eid32 |> System.Convert.ToUInt16
-        let tid = tid32 |> System.Convert.ToUInt32
+        let eid = eid32 |> uint16
+        let tid = tid32 |> uint32
         let uid = Utils.getUserIDFromClaims ctx.User
-        let dbConnection = ctx.GetService<IDbConnectionGetter>()
+        let dbConnection = ctx.GetService<DbConnectionGetter>()
         let antiForgeryTag = createAntiForgeryTokenNode ctx
         let! modelOption = Procedures.Sel_Transaction dbConnection uid eid tid
         let model = 
@@ -422,10 +422,10 @@ let updateTransactionPostHandle (eid32: int) (tid32: int) (next : HttpFunc) (ctx
         | Error e -> return! (setStatusCode 400) next ctx
         | Ok model ->
 
-            let eid = eid32 |> System.Convert.ToUInt16
-            let tid = tid32 |> System.Convert.ToUInt32
+            let eid = eid32 |> uint16
+            let tid = tid32 |> uint32
             let uid = Utils.getUserIDFromClaims ctx.User
-            let dbConnection = ctx.GetService<IDbConnectionGetter>()
+            let dbConnection = ctx.GetService<DbConnectionGetter>()
             let amountInCents = Utils.doubleMoneyToCents model.Amount
             let! result = Procedures.Upd_EnvelopeTransaction dbConnection uid eid tid amountInCents model.Date model.Note
             
@@ -441,10 +441,10 @@ let updateTransactionPostHandle (eid32: int) (tid32: int) (next : HttpFunc) (ctx
 
 let deleteTransactionGetViewHandle (eid32: int) (tid32: int) (next : HttpFunc) (ctx : HttpContext) =
     task {
-        let eid = eid32 |> System.Convert.ToUInt16
-        let tid = tid32 |> System.Convert.ToUInt32
+        let eid = eid32 |> uint16
+        let tid = tid32 |> uint32
         let uid = Utils.getUserIDFromClaims ctx.User
-        let dbConnection = ctx.GetService<IDbConnectionGetter>()
+        let dbConnection = ctx.GetService<DbConnectionGetter>()
 
         let! modelOption = Procedures.Sel_Transaction dbConnection uid eid tid
         let model =
@@ -467,10 +467,10 @@ let deleteTransactionPostHandle (eid32: int) (tid32: int) (next : HttpFunc) (ctx
             let redirectPath = sprintf "/Transaction/%i" eid32
             match model.YesNo with
             | Utils.IgnoreCaseEqual "Yes" ->
-                let dbConnection = ctx.GetService<IDbConnectionGetter>()
+                let dbConnection = ctx.GetService<DbConnectionGetter>()
                 let uid = Utils.getUserIDFromClaims ctx.User
-                let tid = tid32 |> System.Convert.ToUInt32
-                let eid = eid32 |> System.Convert.ToUInt16
+                let tid = tid32 |> uint32
+                let eid = eid32 |> uint16
                 let! r = Procedures.Del_EnvelopeTransaction dbConnection uid eid tid
                 let v = 
                     if Utils.requestIsHTMX ctx then
@@ -489,9 +489,9 @@ let deleteTransactionPostHandle (eid32: int) (tid32: int) (next : HttpFunc) (ctx
 let transferGetHandle (eid32: int) (next : HttpFunc) (ctx : HttpContext) =
     task {
         let uid = Utils.getUserIDFromClaims ctx.User
-        let dbConnection = ctx.GetService<IDbConnectionGetter>()
+        let dbConnection = ctx.GetService<DbConnectionGetter>()
         let! envelopes = Procedures.Sel_Envelope_Summary dbConnection uid
-        let eid = eid32 |> System.Convert.ToUInt16
+        let eid = eid32 |> uint16
         let envelopes = envelopes |> List.filter (fun f -> f.Number <> eid)
         let model = { DestinationNumber = 0us; Amount = 0.0; }
         let view = if Utils.requestIsHTMX ctx then HTMLViews.transferViewPartial else HTMLViews.transferViewFull
@@ -509,8 +509,8 @@ let transferPostHandle (eid32: int) (next : HttpFunc) (ctx : HttpContext) =
         | Ok model ->
             
             let uid = Utils.getUserIDFromClaims ctx.User
-            let dbConnection = ctx.GetService<IDbConnectionGetter>()
-            let eid = eid32 |> System.Convert.ToUInt16
+            let dbConnection = ctx.GetService<DbConnectionGetter>()
+            let eid = eid32 |> uint16
             let amountInCents = Utils.doubleMoneyToCents model.Amount
             let! dbResult = Procedures.Transfer dbConnection uid eid model.DestinationNumber amountInCents
 

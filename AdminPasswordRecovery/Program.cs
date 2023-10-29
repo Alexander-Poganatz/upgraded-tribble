@@ -5,27 +5,14 @@ Console.WriteLine("Welcome to Envelope Password Override");
 
 if(args.Length < 2)
 {
-    Console.WriteLine("Expected at least 2 arguments: '\\PathTo.ini' email");
+    Console.WriteLine("Expected at least 2 arguments: DB_Connection_String email");
     return 1;
 }
 
 try
 {
-    IniParser.Model.IniData iniData;
-    {
-        var iniParser = new IniParser.FileIniDataParser();
-        iniData = iniParser.ReadFile(args[0]);
-    }
-    var section = iniData.Sections.First(f => f.SectionName == "MariaEnvelope");
 
-    string connectionString = string.Empty;
-    {
-        var serverName = section.Keys["Servername"];
-        var databaseName = section.Keys["Database"];
-        var uid = section.Keys["UID"];
-        var pwd = section.Keys["PWD"];
-        connectionString = $"server={serverName};uid={uid};pwd={pwd};database={databaseName};";
-    }
+    string connectionString = args[0];
 
     string email = args[1];
 
@@ -53,6 +40,7 @@ try
 
 } catch(Exception ex)
 {
+    Console.Error.WriteLine(ex.StackTrace);
     Console.Error.WriteLine(ex.Message);
     return 2;
 }

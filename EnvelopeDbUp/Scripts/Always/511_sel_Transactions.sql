@@ -2,10 +2,10 @@ DELIMITER //
 
 DROP PROCEDURE IF EXISTS sel_Transactions;
 CREATE PROCEDURE sel_Transactions(
-	IN uID INT UNSIGNED
-	,IN eNumber SMALLINT UNSIGNED
-	,IN limitNum INT UNSIGNED
-	,IN offsetNum INT UNSIGNED
+	IN uID INT
+	,IN eNumber SMALLINT
+	,IN limitNum INT
+	,IN offsetNum INT
 )
 BEGIN
 	SELECT t.TransactionNumber, t.TransactionAmount, t.TransactionDate, t.Note

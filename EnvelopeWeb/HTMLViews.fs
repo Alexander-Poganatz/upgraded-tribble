@@ -225,14 +225,14 @@ let deleteEnvelopeFull (actionPath: string) antiForgeryInput (model: Models.Enve
     [ deleteEnvelopePartial actionPath antiForgeryInput model ]
     |> layout true deleteOperationText
 
-let transactionIndex (envelopeNum: uint16) (pagePath: string) (currentPageNumber: uint) (model: Models.Sel_Transactions_Result) =
+let transactionIndex (envelopeNum: int16) (pagePath: string) (currentPageNumber: int) (model: Models.Sel_Transactions_Result) =
     let transferUrl = sprintf "/Transaction/Transfer/%i" envelopeNum
     let addUrl = sprintf "/Transaction/Add/%i" envelopeNum
 
-    let maxNumberOfPages = (model.NumberOfAllTransactions / Utils.DefaultPaginationSize) + (if model.NumberOfAllTransactions % Utils.DefaultPaginationSize > 0u then 1u else 0u)
-    let numberOfPagesRange = seq { 1u .. maxNumberOfPages }
+    let maxNumberOfPages = (model.NumberOfAllTransactions / Utils.DefaultPaginationSize) + (if model.NumberOfAllTransactions % Utils.DefaultPaginationSize > 0 then 1 else 0)
+    let numberOfPagesRange = seq { 1 .. maxNumberOfPages }
 
-    let mapNumberToSelectList (num: uint) =
+    let mapNumberToSelectList (num: int) =
         let numStr = num.ToString()
 
         let attrList =
@@ -243,7 +243,7 @@ let transactionIndex (envelopeNum: uint16) (pagePath: string) (currentPageNumber
 
         option attrList [ encodedText numStr ]
         
-    let mapEnvelopeNumberToAnchorForNoScriptBlock (num: uint) =
+    let mapEnvelopeNumberToAnchorForNoScriptBlock (num: int) =
         let numStr = num.ToString()
         let transactionUrl = sprintf "%s?page=%s" pagePath numStr
         a [ _href transactionUrl; _class "button"; ] [ encodedText numStr ]
@@ -305,7 +305,7 @@ let transactionIndex (envelopeNum: uint16) (pagePath: string) (currentPageNumber
     ]
     |> layout true "Transactions"
 
-let private addOrUpdateTransactionViewPartial (operation: string) (submitPath: string) (eid : uint16) antiForgeryNode (model: Models.Transaction) =
+let private addOrUpdateTransactionViewPartial (operation: string) (submitPath: string) (eid : int16) antiForgeryNode (model: Models.Transaction) =
 
     let addAgain =
         if addOperationText = operation then
@@ -334,7 +334,7 @@ let private addOrUpdateTransactionViewPartial (operation: string) (submitPath: s
         ]
     ]
 
-let private addOrUpdateTransactionViewFull (operation: string) (submitPath: string) (eid : uint16) antiForgeryNode (model: Models.Transaction) =
+let private addOrUpdateTransactionViewFull (operation: string) (submitPath: string) (eid : int16) antiForgeryNode (model: Models.Transaction) =
     let operationTitle = operation + " Transaction"
     [ addOrUpdateTransactionViewPartial operation submitPath eid antiForgeryNode model ]
     |> layout true operationTitle

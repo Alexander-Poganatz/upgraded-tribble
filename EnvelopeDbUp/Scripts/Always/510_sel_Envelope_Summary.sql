@@ -2,7 +2,7 @@ DELIMITER //
 
 DROP PROCEDURE IF EXISTS sel_Envelope_Summary;
 CREATE PROCEDURE sel_Envelope_Summary(
-	IN uID INT UNSIGNED
+	IN uID INT
 )
 BEGIN
 	SELECT EnvelopeNumber, EnvelopeName, IFNULL(SUM(t.TransactionAmount),0)

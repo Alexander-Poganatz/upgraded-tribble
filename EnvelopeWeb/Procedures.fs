@@ -17,7 +17,7 @@ let InsertUser (dbConnectionGetter:DbConnection.DbConnectionGetter) email passwo
 
         let command = connection.CreateCommand()
 
-        command.CommandText <- "ins_User"
+        command.CommandText <- "{CALL ins_User(?,?,?,?,?,?)}"
         command.CommandType <- System.Data.CommandType.StoredProcedure
 
         AddParamToCommand command "e" email |> ignore
@@ -43,15 +43,15 @@ let UpdateUserPassword (dbConnectionGetter:DbConnection.DbConnectionGetter) uid 
 
         let command = connection.CreateCommand()
 
-        command.CommandText <- "upd_User_Password"
+        command.CommandText <- "{CALL upd_User_Password(?,?,?,?,?,?)}"
         command.CommandType <- System.Data.CommandType.StoredProcedure
 
         AddParamWithTypeToCommand command "uid" uid OdbcType.Int |> ignore
         AddParamWithTypeToCommand command "p" passwordHash OdbcType.Binary |> ignore
         AddParamWithTypeToCommand command "s" passwordConfig.Salt OdbcType.Binary |> ignore
-        AddParamWithTypeToCommand command "m" passwordConfig.MiB OdbcType.TinyInt |> ignore
-        AddParamWithTypeToCommand command "i" passwordConfig.Iterations OdbcType.TinyInt |> ignore
-        AddParamWithTypeToCommand command "dop" passwordConfig.DegreeOfParallism OdbcType.TinyInt |> ignore
+        AddParamWithTypeToCommand command "m" passwordConfig.MiB OdbcType.SmallInt |> ignore
+        AddParamWithTypeToCommand command "i" passwordConfig.Iterations OdbcType.SmallInt |> ignore
+        AddParamWithTypeToCommand command "dop" passwordConfig.DegreeOfParallism OdbcType.SmallInt |> ignore
 
         do! connection.OpenAsync()
 
@@ -68,7 +68,7 @@ let Sel_UserByEmail (dbConnectionGetter:DbConnection.DbConnectionGetter) email =
 
         let command = connection.CreateCommand()
 
-        command.CommandText <- "sel_UserByEmail"
+        command.CommandText <- "{CALL sel_UserByEmail(?)}"
         command.CommandType <- System.Data.CommandType.StoredProcedure
 
         AddParamToCommand command "e" email |> ignore
@@ -87,8 +87,8 @@ let Sel_UserByEmail (dbConnectionGetter:DbConnection.DbConnectionGetter) email =
                 let salt = Array.create Password.SaltSize 0uy
                 reader.GetBytes(1, 0, passwordHash, 0, passwordHash.Length) |> ignore
                 reader.GetBytes(2, 0, salt, 0, salt.Length) |> ignore
-                let passwordConfig = { MiB = reader.GetByte(3); Iterations = reader.GetByte(4); DegreeOfParallism = reader.GetByte(5); Salt = salt; }
-                let user = { Id = reader.GetInt32(0) |> uint32; PasswordHash = passwordHash; LockoutExpiry = reader.GetDateTime(6); PasswordConfig = passwordConfig }
+                let passwordConfig = { MiB = reader.GetInt16(3); Iterations = reader.GetInt16(4); DegreeOfParallism = reader.GetInt16(5); Salt = salt; }
+                let user = { Id = reader.GetInt32(0); PasswordHash = passwordHash; LockoutExpiry = reader.GetDateTime(6); PasswordConfig = passwordConfig }
                 Some user
             else
                 None
@@ -105,7 +105,7 @@ let Upd_User_Login (dbConnectionGetter:DbConnection.DbConnectionGetter) uid isVa
 
         let command = connection.CreateCommand()
 
-        command.CommandText <- "upd_User_Login"
+        command.CommandText <- "{CALL upd_User_Login(?,?)}"
         command.CommandType <- System.Data.CommandType.StoredProcedure
 
         AddParamWithTypeToCommand command "uID" uid OdbcType.Int |> ignore
@@ -126,10 +126,10 @@ let Ins_Envelope (dbConnectionGetter:DbConnection.DbConnectionGetter) uid eName 
 
         let command = connection.CreateCommand()
 
-        command.CommandText <- "ins_Envelope"
+        command.CommandText <- "{CALL ins_Envelope(?,?)}"
         command.CommandType <- System.Data.CommandType.StoredProcedure
 
-        AddParamToCommand command "uID" uid |> ignore
+        AddParamWithTypeToCommand command "uID" uid OdbcType.Int |> ignore
         AddParamToCommand command "eName" eName |> ignore
 
     
@@ -148,7 +148,7 @@ let Upd_Envelope (dbConnectionGetter:DbConnection.DbConnectionGetter) uid eNumbe
 
         let command = connection.CreateCommand()
 
-        command.CommandText <- "upd_Envelope"
+        command.CommandText <- "{CALL upd_Envelope(?,?,?)}"
         command.CommandType <- System.Data.CommandType.StoredProcedure
 
         AddParamWithTypeToCommand command "uID" uid OdbcType.Int |> ignore
@@ -171,7 +171,7 @@ let Del_Envelope (dbConnectionGetter:DbConnection.DbConnectionGetter) uid eNumbe
 
         let command = connection.CreateCommand()
 
-        command.CommandText <- "del_Envelope"
+        command.CommandText <- "{CALL del_Envelope(?,?)}"
         command.CommandType <- System.Data.CommandType.StoredProcedure
 
         AddParamWithTypeToCommand command "uID" uid OdbcType.Int |> ignore
@@ -210,7 +210,7 @@ let Ins_EnvelopeTransaction (dbConnectionGetter:DbConnection.DbConnectionGetter)
         return rowsInserted
     }
 
-let Upd_EnvelopeTransaction (dbConnectionGetter:DbConnection.DbConnectionGetter) uid eNumber (tNumber:uint32) (amount:int) (date:System.DateTime) note =
+let Upd_EnvelopeTransaction (dbConnectionGetter:DbConnection.DbConnectionGetter) uid eNumber (tNumber:int32) (amount:int) (date:System.DateTime) note =
     task {
         use connection = dbConnectionGetter.GetNewConnection()
 
@@ -235,7 +235,7 @@ let Upd_EnvelopeTransaction (dbConnectionGetter:DbConnection.DbConnectionGetter)
         return rowsInserted
     }
 
-let Del_EnvelopeTransaction (dbConnectionGetter:DbConnection.DbConnectionGetter) uid eNumber (tNumber:uint32) =
+let Del_EnvelopeTransaction (dbConnectionGetter:DbConnection.DbConnectionGetter) uid eNumber (tNumber:int32) =
     task {
         use connection = dbConnectionGetter.GetNewConnection()
 
@@ -264,7 +264,7 @@ let Sel_Envelope_Summary (dbConnectionGetter:DbConnection.DbConnectionGetter) ui
             if hasRow then
                 let a = (reader.GetInt32(2) |> System.Convert.ToDouble) / 100.0
 
-                let e = { Number = reader.GetInt16(0) |> uint16; Name= reader.GetString(1); Amount = a }
+                let e = { Number = reader.GetInt16(0); Name= reader.GetString(1); Amount = a }
                 return Some e
             else
                 return None
@@ -285,7 +285,7 @@ let Sel_Envelope_Summary (dbConnectionGetter:DbConnection.DbConnectionGetter) ui
 
         let command = connection.CreateCommand()
 
-        command.CommandText <- "sel_Envelope_Summary"
+        command.CommandText <- "{CALL sel_Envelope_Summary(?)}"
         command.CommandType <- System.Data.CommandType.StoredProcedure
 
         AddParamWithTypeToCommand command "uID" uid OdbcType.Int |> ignore
@@ -310,7 +310,7 @@ let Sel_Transactions (dbConnectionGetter:DbConnection.DbConnectionGetter) uid en
             if hasRow then
                 let a = (reader.GetInt32(1) |> System.Convert.ToDouble) / 100.0
 
-                let e = { TransactionNumber = reader.GetInt32(0) |> uint32; Amount = a; Date = reader.GetDateTime(2); Note = reader.GetString(3); }
+                let e = { TransactionNumber = reader.GetInt32(0); Amount = a; Date = reader.GetDateTime(2); Note = reader.GetString(3); }
                 return Some e
             else
                 return None
@@ -338,7 +338,7 @@ let Sel_Transactions (dbConnectionGetter:DbConnection.DbConnectionGetter) uid en
         AddParamWithTypeToCommand command "uID" uid OdbcType.Int |> ignore
         AddParamWithTypeToCommand command "eNumber" envelopeNumber OdbcType.SmallInt |> ignore
         AddParamWithTypeToCommand command "limitNum" limitNum OdbcType.Int |> ignore
-        AddParamWithTypeToCommand command "offsetNum" (limitNum * (page-1u)) OdbcType.Int |> ignore
+        AddParamWithTypeToCommand command "offsetNum" (limitNum * (page-1)) OdbcType.Int |> ignore
     
         do! connection.OpenAsync() |> Async.AwaitTask
 
@@ -349,7 +349,7 @@ let Sel_Transactions (dbConnectionGetter:DbConnection.DbConnectionGetter) uid en
 
         let! throwAway = reader.NextResultAsync() |> Async.AwaitTask
         let! throwAway = reader.ReadAsync() |> Async.AwaitTask
-        let numOfTransactions = reader.GetInt32(0) |> uint32
+        let numOfTransactions = reader.GetInt32(0)
 
         let result = { NumberOfAllTransactions = numOfTransactions; Transactions = transactions |> List.rev}
 
@@ -383,7 +383,7 @@ let Sel_Transaction (dbConnectionGetter:DbConnection.DbConnectionGetter) uid env
             if hasResult then
                 let a = (reader.GetInt32(1) |> System.Convert.ToDouble) / 100.0
 
-                Some { TransactionNumber = reader.GetInt32(0) |> uint32; Amount = a; Date = reader.GetDateTime(2); Note = reader.GetString(3); }
+                Some { TransactionNumber = reader.GetInt32(0); Amount = a; Date = reader.GetDateTime(2); Note = reader.GetString(3); }
             else 
                 None
 

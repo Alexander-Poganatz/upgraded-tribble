@@ -339,15 +339,15 @@ let transactionGetHandle (eid32: int) (next : HttpFunc) (ctx : HttpContext) =
         let page = 
             let pageQuery = ctx.TryGetQueryStringValue("page")
             match pageQuery with
-            | None -> 1u
+            | None -> 1
             | Some p ->
                     
-                    let isValid, n = System.UInt32.TryParse p
+                    let isValid, n = System.Int32.TryParse p
                     match isValid with
-                    | false -> 1u
-                    | true -> System.Math.Max(1u, n)
+                    | false -> 1
+                    | true -> System.Math.Max(1, n)
                     
-        let eid = eid32 |> uint16
+        let eid = eid32 |> int16
         let uid = Utils.getUserIDFromClaims ctx.User
         let dbConnection = ctx.GetService<DbConnectionGetter>()
         let! transactionResult = Procedures.Sel_Transactions dbConnection uid eid Utils.DefaultPaginationSize page
@@ -355,7 +355,7 @@ let transactionGetHandle (eid32: int) (next : HttpFunc) (ctx : HttpContext) =
     }
 
 let private addTransactionGetHandle' (model: Models.Transaction) (eid32: int) (next : HttpFunc) (ctx : HttpContext) =
-    let eid = eid32 |> uint16
+    let eid = eid32 |> int16
     let antiForgeryTag = createAntiForgeryTokenNode ctx
     let view =
         if Utils.requestIsHTMX ctx then
@@ -366,11 +366,11 @@ let private addTransactionGetHandle' (model: Models.Transaction) (eid32: int) (n
     v next ctx
 
 let addTransactionGetHandle (eid32: int) (next : HttpFunc) (ctx : HttpContext) =
-    addTransactionGetHandle' { TransactionNumber = 0u; Amount = 0.0; Date = System.DateTime.MinValue; Note = ""; } eid32 next ctx
+    addTransactionGetHandle' { TransactionNumber = 0; Amount = 0.0; Date = System.DateTime.MinValue; Note = ""; } eid32 next ctx
 
 let addTransactionPostHandle (eid32: int) (next : HttpFunc) (ctx : HttpContext) =
     task {
-        let eid = eid32 |> uint16
+        let eid = eid32 |> int16
         let! modelOption = ctx.TryBindFormAsync<Models.Transaction>()
 
         match modelOption with
@@ -392,17 +392,16 @@ let addTransactionPostHandle (eid32: int) (next : HttpFunc) (ctx : HttpContext) 
                 return! (redirectTo false (sprintf "/Transaction/%i" eid32) next ctx)
     }
 
-let updateTransactionGetHandle (eid32: int) (tid32: int) (next : HttpFunc) (ctx : HttpContext) =
+let updateTransactionGetHandle (eid32: int) (tid: int) (next : HttpFunc) (ctx : HttpContext) =
     task {
-        let eid = eid32 |> uint16
-        let tid = tid32 |> uint32
+        let eid = eid32 |> int16
         let uid = Utils.getUserIDFromClaims ctx.User
         let dbConnection = ctx.GetService<DbConnectionGetter>()
         let antiForgeryTag = createAntiForgeryTokenNode ctx
         let! modelOption = Procedures.Sel_Transaction dbConnection uid eid tid
         let model = 
             match modelOption with
-            | None -> { TransactionNumber = 0u; Amount = 0.0; Date = System.DateTime.MinValue; Note = ""; }
+            | None -> { TransactionNumber = 0; Amount = 0.0; Date = System.DateTime.MinValue; Note = ""; }
             | Some m -> m
 
         let view =
@@ -414,7 +413,7 @@ let updateTransactionGetHandle (eid32: int) (tid32: int) (next : HttpFunc) (ctx 
         return! v next ctx
     }
 
-let updateTransactionPostHandle (eid32: int) (tid32: int) (next : HttpFunc) (ctx : HttpContext) =
+let updateTransactionPostHandle (eid32: int) (tid: int) (next : HttpFunc) (ctx : HttpContext) =
     task {
         
         let! modelResult = ctx.TryBindFormAsync<Models.Transaction>()
@@ -423,7 +422,6 @@ let updateTransactionPostHandle (eid32: int) (tid32: int) (next : HttpFunc) (ctx
         | Ok model ->
 
             let eid = eid32 |> uint16
-            let tid = tid32 |> uint32
             let uid = Utils.getUserIDFromClaims ctx.User
             let dbConnection = ctx.GetService<DbConnectionGetter>()
             let amountInCents = Utils.doubleMoneyToCents model.Amount
@@ -439,17 +437,16 @@ let updateTransactionPostHandle (eid32: int) (tid32: int) (next : HttpFunc) (ctx
             return! v next ctx
     }
 
-let deleteTransactionGetViewHandle (eid32: int) (tid32: int) (next : HttpFunc) (ctx : HttpContext) =
+let deleteTransactionGetViewHandle (eid32: int) (tid: int) (next : HttpFunc) (ctx : HttpContext) =
     task {
         let eid = eid32 |> uint16
-        let tid = tid32 |> uint32
         let uid = Utils.getUserIDFromClaims ctx.User
         let dbConnection = ctx.GetService<DbConnectionGetter>()
 
         let! modelOption = Procedures.Sel_Transaction dbConnection uid eid tid
         let model =
             match modelOption with
-            | None -> { TransactionNumber = 0u; Amount = 0.0; Date = System.DateTime.MinValue; Note = System.String.Empty }
+            | None -> { TransactionNumber = 0; Amount = 0.0; Date = System.DateTime.MinValue; Note = System.String.Empty }
             | Some m -> m
 
         let view = if Utils.requestIsHTMX ctx then HTMLViews.deleteTransactionViewPartial else HTMLViews.deleteTransactionViewFull
@@ -459,7 +456,7 @@ let deleteTransactionGetViewHandle (eid32: int) (tid32: int) (next : HttpFunc) (
         return! v next ctx
     }
     
-let deleteTransactionPostHandle (eid32: int) (tid32: int) (next : HttpFunc) (ctx : HttpContext) =
+let deleteTransactionPostHandle (eid32: int) (tid: int) (next : HttpFunc) (ctx : HttpContext) =
     task {
         let! modelResult = ctx.TryBindFormAsync<YesNo>()
         match modelResult with
@@ -469,7 +466,6 @@ let deleteTransactionPostHandle (eid32: int) (tid32: int) (next : HttpFunc) (ctx
             | Utils.IgnoreCaseEqual "Yes" ->
                 let dbConnection = ctx.GetService<DbConnectionGetter>()
                 let uid = Utils.getUserIDFromClaims ctx.User
-                let tid = tid32 |> uint32
                 let eid = eid32 |> uint16
                 let! r = Procedures.Del_EnvelopeTransaction dbConnection uid eid tid
                 let v = 
@@ -480,7 +476,7 @@ let deleteTransactionPostHandle (eid32: int) (tid32: int) (next : HttpFunc) (ctx
                         redirectTo false redirectPath
                 return! v next ctx
             | Utils.IgnoreCaseEqual "No" -> return! (redirectTo false redirectPath) next ctx
-            | _ -> return! (deleteTransactionGetViewHandle eid32 tid32) next ctx
+            | _ -> return! (deleteTransactionGetViewHandle eid32 tid) next ctx
                             
         | Error e ->
             return! setStatusCode 400 next ctx
@@ -491,9 +487,9 @@ let transferGetHandle (eid32: int) (next : HttpFunc) (ctx : HttpContext) =
         let uid = Utils.getUserIDFromClaims ctx.User
         let dbConnection = ctx.GetService<DbConnectionGetter>()
         let! envelopes = Procedures.Sel_Envelope_Summary dbConnection uid
-        let eid = eid32 |> uint16
+        let eid = eid32 |> int16
         let envelopes = envelopes |> List.filter (fun f -> f.Number <> eid)
-        let model = { DestinationNumber = 0us; Amount = 0.0; }
+        let model = { DestinationNumber = 0s; Amount = 0.0; }
         let view = if Utils.requestIsHTMX ctx then HTMLViews.transferViewPartial else HTMLViews.transferViewFull
         let antiForgeryNode = createAntiForgeryTokenNode ctx
         let v = view ctx.Request.Path.Value antiForgeryNode envelopes model

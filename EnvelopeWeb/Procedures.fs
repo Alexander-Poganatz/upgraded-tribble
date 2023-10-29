@@ -192,7 +192,7 @@ let Ins_EnvelopeTransaction (dbConnectionGetter:DbConnection.DbConnectionGetter)
 
         let command = connection.CreateCommand()
 
-        command.CommandText <- "ins_EnvelopeTransaction"
+        command.CommandText <- "{CALL ins_EnvelopeTransaction(?,?,?,?,?)}"
         command.CommandType <- System.Data.CommandType.StoredProcedure
 
         AddParamWithTypeToCommand command "uID" uid OdbcType.Int |> ignore
@@ -216,7 +216,7 @@ let Upd_EnvelopeTransaction (dbConnectionGetter:DbConnection.DbConnectionGetter)
 
         let command = connection.CreateCommand()
 
-        command.CommandText <- "upd_EnvelopeTransaction"
+        command.CommandText <- "{CALL upd_EnvelopeTransaction(?,?,?,?,?,?)}"
         command.CommandType <- System.Data.CommandType.StoredProcedure
 
         AddParamWithTypeToCommand command "uID" uid OdbcType.Int |> ignore
@@ -241,7 +241,7 @@ let Del_EnvelopeTransaction (dbConnectionGetter:DbConnection.DbConnectionGetter)
 
         let command = connection.CreateCommand()
 
-        command.CommandText <- "del_EnvelopeTransaction"
+        command.CommandText <- "{CALL del_EnvelopeTransaction(?,?,?)}"
         command.CommandType <- System.Data.CommandType.StoredProcedure
 
         AddParamWithTypeToCommand command "uID" uid OdbcType.Int |> ignore
@@ -332,7 +332,7 @@ let Sel_Transactions (dbConnectionGetter:DbConnection.DbConnectionGetter) uid en
 
         let command = connection.CreateCommand()
 
-        command.CommandText <- "sel_Transactions"
+        command.CommandText <- "{CALL sel_Transactions(?,?,?,?)}"
         command.CommandType <- System.Data.CommandType.StoredProcedure
 
         AddParamWithTypeToCommand command "uID" uid OdbcType.Int |> ignore
@@ -365,7 +365,7 @@ let Sel_Transaction (dbConnectionGetter:DbConnection.DbConnectionGetter) uid env
 
         let command = connection.CreateCommand()
 
-        command.CommandText <- "sel_Transaction"
+        command.CommandText <- "{CALL sel_Transaction(?,?,?)}"
         command.CommandType <- System.Data.CommandType.StoredProcedure
 
         AddParamWithTypeToCommand command "uID" uid OdbcType.Int |> ignore
@@ -399,7 +399,7 @@ let Transfer (dbConnectionGetter:DbConnection.DbConnectionGetter) uid eSourceNum
 
         let command = connection.CreateCommand()
 
-        command.CommandText <- "transfer"
+        command.CommandText <- "{CALL transfer(?,?,?,?)}"
         command.CommandType <- System.Data.CommandType.StoredProcedure
 
         AddParamWithTypeToCommand command "uID" uid OdbcType.Int |> ignore

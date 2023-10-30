@@ -33,7 +33,7 @@ try
     argon.Salt = newSalt;
     var newPasswordHash = argon.GetBytes(existingPasswordConfig.PasswordLength);
 
-    int rowsEffected = DBModule.SetPassword(connectionString, existingPasswordConfig.UserID, newPasswordHash, newSalt);
+    int rowsEffected = DBModule.SetPassword(connectionString, newPasswordHash, newSalt, existingPasswordConfig);
 
     Console.WriteLine("Effected {0} rows!", rowsEffected);
     Console.WriteLine("New Password: {0}", base64Password);

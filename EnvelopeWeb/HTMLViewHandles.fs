@@ -278,7 +278,7 @@ let private envelopeUpdatePostHandle' (eidParam: int) (next: HttpFunc) (ctx : Ht
         | Ok model -> 
                         let dbConnection = ctx.GetService<DbConnectionGetter>()
                         let uid = Utils.getUserIDFromClaims ctx.User
-                        let eid = eidParam |> uint16
+                        let eid = eidParam |> int16
                         let! r = Procedures.Upd_Envelope dbConnection uid eid model.EnvelopeName
                         return! (redirectTo false "/Envelope") next ctx
         | Error e ->
@@ -421,7 +421,7 @@ let updateTransactionPostHandle (eid32: int) (tid: int) (next : HttpFunc) (ctx :
         | Error e -> return! (setStatusCode 400) next ctx
         | Ok model ->
 
-            let eid = eid32 |> uint16
+            let eid = eid32 |> int16
             let uid = Utils.getUserIDFromClaims ctx.User
             let dbConnection = ctx.GetService<DbConnectionGetter>()
             let amountInCents = Utils.doubleMoneyToCents model.Amount
@@ -439,7 +439,7 @@ let updateTransactionPostHandle (eid32: int) (tid: int) (next : HttpFunc) (ctx :
 
 let deleteTransactionGetViewHandle (eid32: int) (tid: int) (next : HttpFunc) (ctx : HttpContext) =
     task {
-        let eid = eid32 |> uint16
+        let eid = eid32 |> int16
         let uid = Utils.getUserIDFromClaims ctx.User
         let dbConnection = ctx.GetService<DbConnectionGetter>()
 
@@ -466,7 +466,7 @@ let deleteTransactionPostHandle (eid32: int) (tid: int) (next : HttpFunc) (ctx :
             | Utils.IgnoreCaseEqual "Yes" ->
                 let dbConnection = ctx.GetService<DbConnectionGetter>()
                 let uid = Utils.getUserIDFromClaims ctx.User
-                let eid = eid32 |> uint16
+                let eid = eid32 |> int16
                 let! r = Procedures.Del_EnvelopeTransaction dbConnection uid eid tid
                 let v = 
                     if Utils.requestIsHTMX ctx then
@@ -506,7 +506,7 @@ let transferPostHandle (eid32: int) (next : HttpFunc) (ctx : HttpContext) =
             
             let uid = Utils.getUserIDFromClaims ctx.User
             let dbConnection = ctx.GetService<DbConnectionGetter>()
-            let eid = eid32 |> uint16
+            let eid = eid32 |> int16
             let amountInCents = Utils.doubleMoneyToCents model.Amount
             let! dbResult = Procedures.Transfer dbConnection uid eid model.DestinationNumber amountInCents
 

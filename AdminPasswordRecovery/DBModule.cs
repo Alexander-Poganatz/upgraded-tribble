@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Data.Odbc;
+﻿using System.Data.Odbc;
 namespace AdminPasswordRecovery
 {
     internal static class DBModule
@@ -15,7 +10,6 @@ namespace AdminPasswordRecovery
             dbConnection.Open();
 
             var command = dbConnection.CreateCommand();
-            //command.CommandText = "SELECT UserID, LENGTH(PasswordHash) AS PasswordLength, LENGTH(PasswordSalt) AS SaltLength, Mib, Iterations, DegreeOfParallelism FROM `User` WHERE Email = ?";
             command.CommandText = "{CALL sel_UserByEmail(?)}";
             command.CommandType = System.Data.CommandType.StoredProcedure;
             command.Parameters.AddWithValue("e", email);

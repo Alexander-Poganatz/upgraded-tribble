@@ -1,32 +1,31 @@
 ﻿module Procedures
-
-open MySqlConnector
+open System.Data.Odbc
 open Models
 
-let private AddParamToCommand (command:MySqlCommand) (paramName:string) (value:obj) =
-    let param = MySqlParameter(paramName, value)
+let private AddParamToCommand (command:OdbcCommand) (paramName:string) (value:obj) =
+    let param = OdbcParameter(paramName, value)
     command.Parameters.Add param
 
-let private AddParamWithTypeToCommand (command:MySqlCommand) (paramName:string) (value:obj) mySqlType =
-    let param = MySqlParameter(paramName, value)
-    param.MySqlDbType <- mySqlType
+let private AddParamWithTypeToCommand (command:OdbcCommand) (paramName:string) (value:obj) dataType =
+    let param = OdbcParameter(paramName, value)
+    param.OdbcType <- dataType
     command.Parameters.Add param
 
-let InsertUser (dbConnectionGetter:DbConnection.IDbConnectionGetter) email passwordHash (passwordConfig:PasswordConfig) =
+let InsertUser (dbConnectionGetter:DbConnection.DbConnectionGetter) email passwordHash (passwordConfig:PasswordConfig) =
     task {
         use connection = dbConnectionGetter.GetNewConnection()
 
         let command = connection.CreateCommand()
 
-        command.CommandText <- "ins_User"
+        command.CommandText <- "{CALL ins_User(?,?,?,?,?,?)}"
         command.CommandType <- System.Data.CommandType.StoredProcedure
 
         AddParamToCommand command "e" email |> ignore
-        AddParamWithTypeToCommand command "p" passwordHash MySqlDbType.Binary |> ignore
-        AddParamWithTypeToCommand command "s" passwordConfig.Salt MySqlDbType.Binary |> ignore
-        AddParamWithTypeToCommand command "m" passwordConfig.MiB MySqlDbType.UByte |> ignore
-        AddParamWithTypeToCommand command "i" passwordConfig.Iterations MySqlDbType.UByte |> ignore
-        AddParamWithTypeToCommand command "dop" passwordConfig.DegreeOfParallism MySqlDbType.UByte |> ignore
+        AddParamWithTypeToCommand command "p" passwordHash OdbcType.Binary |> ignore
+        AddParamWithTypeToCommand command "s" passwordConfig.Salt OdbcType.Binary |> ignore
+        AddParamWithTypeToCommand command "m" passwordConfig.MiB OdbcType.SmallInt |> ignore
+        AddParamWithTypeToCommand command "i" passwordConfig.Iterations OdbcType.SmallInt |> ignore
+        AddParamWithTypeToCommand command "dop" passwordConfig.DegreeOfParallism OdbcType.SmallInt |> ignore
 
     
         do! connection.OpenAsync()
@@ -38,21 +37,21 @@ let InsertUser (dbConnectionGetter:DbConnection.IDbConnectionGetter) email passw
         return rowsInserted
     }
     
-let UpdateUserPassword (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid passwordHash (passwordConfig:PasswordConfig) =
+let UpdateUserPassword (dbConnectionGetter:DbConnection.DbConnectionGetter) uid passwordHash (passwordConfig:PasswordConfig) =
     task {
         use connection = dbConnectionGetter.GetNewConnection()
 
         let command = connection.CreateCommand()
 
-        command.CommandText <- "upd_User_Password"
+        command.CommandText <- "{CALL upd_User_Password(?,?,?,?,?,?)}"
         command.CommandType <- System.Data.CommandType.StoredProcedure
 
-        AddParamWithTypeToCommand command "uid" uid MySqlDbType.UInt32 |> ignore
-        AddParamWithTypeToCommand command "p" passwordHash MySqlDbType.Binary |> ignore
-        AddParamWithTypeToCommand command "s" passwordConfig.Salt MySqlDbType.Binary |> ignore
-        AddParamWithTypeToCommand command "m" passwordConfig.MiB MySqlDbType.UByte |> ignore
-        AddParamWithTypeToCommand command "i" passwordConfig.Iterations MySqlDbType.UByte |> ignore
-        AddParamWithTypeToCommand command "dop" passwordConfig.DegreeOfParallism MySqlDbType.UByte |> ignore
+        AddParamWithTypeToCommand command "uid" uid OdbcType.Int |> ignore
+        AddParamWithTypeToCommand command "p" passwordHash OdbcType.Binary |> ignore
+        AddParamWithTypeToCommand command "s" passwordConfig.Salt OdbcType.Binary |> ignore
+        AddParamWithTypeToCommand command "m" passwordConfig.MiB OdbcType.SmallInt |> ignore
+        AddParamWithTypeToCommand command "i" passwordConfig.Iterations OdbcType.SmallInt |> ignore
+        AddParamWithTypeToCommand command "dop" passwordConfig.DegreeOfParallism OdbcType.SmallInt |> ignore
 
         do! connection.OpenAsync()
 
@@ -63,13 +62,13 @@ let UpdateUserPassword (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid
         return rowsInserted
     }
 
-let Sel_UserByEmail (dbConnectionGetter:DbConnection.IDbConnectionGetter) email =
+let Sel_UserByEmail (dbConnectionGetter:DbConnection.DbConnectionGetter) email =
     task {
         use connection = dbConnectionGetter.GetNewConnection()
 
         let command = connection.CreateCommand()
 
-        command.CommandText <- "sel_UserByEmail"
+        command.CommandText <- "{CALL sel_UserByEmail(?)}"
         command.CommandType <- System.Data.CommandType.StoredProcedure
 
         AddParamToCommand command "e" email |> ignore
@@ -78,7 +77,7 @@ let Sel_UserByEmail (dbConnectionGetter:DbConnection.IDbConnectionGetter) email 
         do! connection.OpenAsync()
 
         use! reader' = command.ExecuteReaderAsync()
-        let reader = reader' :?> MySqlDataReader
+        let reader = reader' :?> OdbcDataReader
 
         let! userExists = reader.ReadAsync()
 
@@ -88,8 +87,8 @@ let Sel_UserByEmail (dbConnectionGetter:DbConnection.IDbConnectionGetter) email 
                 let salt = Array.create Password.SaltSize 0uy
                 reader.GetBytes(1, 0, passwordHash, 0, passwordHash.Length) |> ignore
                 reader.GetBytes(2, 0, salt, 0, salt.Length) |> ignore
-                let passwordConfig = { MiB = reader.GetByte(3); Iterations = reader.GetByte(4); DegreeOfParallism = reader.GetByte(5); Salt = salt; }
-                let user = { Id = reader.GetUInt32(0); PasswordHash = passwordHash; LockoutExpiry = reader.GetDateTime(6); PasswordConfig = passwordConfig }
+                let passwordConfig = { MiB = reader.GetInt16(3); Iterations = reader.GetInt16(4); DegreeOfParallism = reader.GetInt16(5); Salt = salt; }
+                let user = { Id = reader.GetInt32(0); PasswordHash = passwordHash; LockoutExpiry = reader.GetDateTime(6); PasswordConfig = passwordConfig }
                 Some user
             else
                 None
@@ -100,17 +99,17 @@ let Sel_UserByEmail (dbConnectionGetter:DbConnection.IDbConnectionGetter) email 
         return user
     }
 
-let Upd_User_Login (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid isValid =
+let Upd_User_Login (dbConnectionGetter:DbConnection.DbConnectionGetter) uid isValid =
     task {
         use connection = dbConnectionGetter.GetNewConnection()
 
         let command = connection.CreateCommand()
 
-        command.CommandText <- "upd_User_Login"
+        command.CommandText <- "{CALL upd_User_Login(?,?)}"
         command.CommandType <- System.Data.CommandType.StoredProcedure
 
-        AddParamWithTypeToCommand command "uID" uid MySqlDbType.UInt32 |> ignore
-        AddParamWithTypeToCommand command "isValid" isValid MySqlDbType.Bit |> ignore
+        AddParamWithTypeToCommand command "uID" uid OdbcType.Int |> ignore
+        AddParamWithTypeToCommand command "isValid" isValid OdbcType.Bit |> ignore
 
         do! connection.OpenAsync()
 
@@ -121,16 +120,16 @@ let Upd_User_Login (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid isV
         return rowsInserted
     }
 
-let Ins_Envelope (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid eName =
+let Ins_Envelope (dbConnectionGetter:DbConnection.DbConnectionGetter) uid eName =
     task {
         use connection = dbConnectionGetter.GetNewConnection()
 
         let command = connection.CreateCommand()
 
-        command.CommandText <- "ins_Envelope"
+        command.CommandText <- "{CALL ins_Envelope(?,?)}"
         command.CommandType <- System.Data.CommandType.StoredProcedure
 
-        AddParamToCommand command "uID" uid |> ignore
+        AddParamWithTypeToCommand command "uID" uid OdbcType.Int |> ignore
         AddParamToCommand command "eName" eName |> ignore
 
     
@@ -143,17 +142,17 @@ let Ins_Envelope (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid eName
         return rowsInserted |> System.Convert.ToUInt16
     }
 
-let Upd_Envelope (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid eNumber newName =
+let Upd_Envelope (dbConnectionGetter:DbConnection.DbConnectionGetter) uid eNumber newName =
     task {
         use connection = dbConnectionGetter.GetNewConnection()
 
         let command = connection.CreateCommand()
 
-        command.CommandText <- "upd_Envelope"
+        command.CommandText <- "{CALL upd_Envelope(?,?,?)}"
         command.CommandType <- System.Data.CommandType.StoredProcedure
 
-        AddParamWithTypeToCommand command "uID" uid MySqlDbType.UInt32 |> ignore
-        AddParamWithTypeToCommand command "eNumber" eNumber MySqlDbType.UInt16 |> ignore
+        AddParamWithTypeToCommand command "uID" uid OdbcType.Int |> ignore
+        AddParamWithTypeToCommand command "eNumber" eNumber OdbcType.SmallInt |> ignore
         AddParamToCommand command "eName" newName |> ignore
 
         do! connection.OpenAsync()
@@ -165,18 +164,18 @@ let Upd_Envelope (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid eNumb
         return rowsInserted
     }
 
-let Del_Envelope (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid eNumber =
+let Del_Envelope (dbConnectionGetter:DbConnection.DbConnectionGetter) uid eNumber =
     task {
     
         use connection = dbConnectionGetter.GetNewConnection()
 
         let command = connection.CreateCommand()
 
-        command.CommandText <- "del_Envelope"
+        command.CommandText <- "{CALL del_Envelope(?,?)}"
         command.CommandType <- System.Data.CommandType.StoredProcedure
 
-        AddParamWithTypeToCommand command "uID" uid MySqlDbType.UInt32 |> ignore
-        AddParamWithTypeToCommand command "eNumber" eNumber MySqlDbType.UInt16 |> ignore
+        AddParamWithTypeToCommand command "uID" uid OdbcType.Int |> ignore
+        AddParamWithTypeToCommand command "eNumber" eNumber OdbcType.SmallInt |> ignore
 
         do! connection.OpenAsync()
 
@@ -187,19 +186,19 @@ let Del_Envelope (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid eNumb
         return rowsInserted
     }
 
-let Ins_EnvelopeTransaction (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid eNumber (amount:int) (date:System.DateTime) note =
+let Ins_EnvelopeTransaction (dbConnectionGetter:DbConnection.DbConnectionGetter) uid eNumber (amount:int) (date:System.DateTime) note =
     task {
         use connection = dbConnectionGetter.GetNewConnection()
 
         let command = connection.CreateCommand()
 
-        command.CommandText <- "ins_EnvelopeTransaction"
+        command.CommandText <- "{CALL ins_EnvelopeTransaction(?,?,?,?,?)}"
         command.CommandType <- System.Data.CommandType.StoredProcedure
 
-        AddParamWithTypeToCommand command "uID" uid MySqlDbType.UInt32 |> ignore
-        AddParamWithTypeToCommand command "eNumber" eNumber MySqlDbType.UInt16 |> ignore
-        AddParamWithTypeToCommand command "amount" amount MySqlDbType.Int32 |> ignore
-        AddParamWithTypeToCommand command "tDate" date MySqlDbType.DateTime |> ignore
+        AddParamWithTypeToCommand command "uID" uid OdbcType.Int |> ignore
+        AddParamWithTypeToCommand command "eNumber" eNumber OdbcType.SmallInt |> ignore
+        AddParamWithTypeToCommand command "amount" amount OdbcType.Int |> ignore
+        AddParamWithTypeToCommand command "tDate" date OdbcType.DateTime |> ignore
         AddParamToCommand command "tNote" note |> ignore
 
         do! connection.OpenAsync()
@@ -211,20 +210,20 @@ let Ins_EnvelopeTransaction (dbConnectionGetter:DbConnection.IDbConnectionGetter
         return rowsInserted
     }
 
-let Upd_EnvelopeTransaction (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid eNumber (tNumber:uint32) (amount:int) (date:System.DateTime) note =
+let Upd_EnvelopeTransaction (dbConnectionGetter:DbConnection.DbConnectionGetter) uid eNumber (tNumber:int32) (amount:int) (date:System.DateTime) note =
     task {
         use connection = dbConnectionGetter.GetNewConnection()
 
         let command = connection.CreateCommand()
 
-        command.CommandText <- "upd_EnvelopeTransaction"
+        command.CommandText <- "{CALL upd_EnvelopeTransaction(?,?,?,?,?,?)}"
         command.CommandType <- System.Data.CommandType.StoredProcedure
 
-        AddParamWithTypeToCommand command "uID" uid MySqlDbType.UInt32 |> ignore
-        AddParamWithTypeToCommand command "eNumber" eNumber MySqlDbType.UInt16 |> ignore
-        AddParamWithTypeToCommand command "tNumber" tNumber MySqlDbType.UInt32 |> ignore
-        AddParamWithTypeToCommand command "amount" amount MySqlDbType.Int32 |> ignore
-        AddParamWithTypeToCommand command "tDate" date MySqlDbType.DateTime |> ignore
+        AddParamWithTypeToCommand command "uID" uid OdbcType.Int |> ignore
+        AddParamWithTypeToCommand command "eNumber" eNumber OdbcType.SmallInt |> ignore
+        AddParamWithTypeToCommand command "tNumber" tNumber OdbcType.Int |> ignore
+        AddParamWithTypeToCommand command "amount" amount OdbcType.Int |> ignore
+        AddParamWithTypeToCommand command "tDate" date OdbcType.DateTime |> ignore
         AddParamToCommand command "tNote" note |> ignore
 
         do! connection.OpenAsync()
@@ -236,18 +235,18 @@ let Upd_EnvelopeTransaction (dbConnectionGetter:DbConnection.IDbConnectionGetter
         return rowsInserted
     }
 
-let Del_EnvelopeTransaction (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid eNumber (tNumber:uint32) =
+let Del_EnvelopeTransaction (dbConnectionGetter:DbConnection.DbConnectionGetter) uid eNumber (tNumber:int32) =
     task {
         use connection = dbConnectionGetter.GetNewConnection()
 
         let command = connection.CreateCommand()
 
-        command.CommandText <- "del_EnvelopeTransaction"
+        command.CommandText <- "{CALL del_EnvelopeTransaction(?,?,?)}"
         command.CommandType <- System.Data.CommandType.StoredProcedure
 
-        AddParamWithTypeToCommand command "uID" uid MySqlDbType.UInt32 |> ignore
-        AddParamWithTypeToCommand command "eNumber" eNumber MySqlDbType.UInt16 |> ignore
-        AddParamWithTypeToCommand command "tNumber" tNumber MySqlDbType.UInt32 |> ignore
+        AddParamWithTypeToCommand command "uID" uid OdbcType.Int |> ignore
+        AddParamWithTypeToCommand command "eNumber" eNumber OdbcType.SmallInt |> ignore
+        AddParamWithTypeToCommand command "tNumber" tNumber OdbcType.Int |> ignore
 
         do! connection.OpenAsync()
 
@@ -258,20 +257,20 @@ let Del_EnvelopeTransaction (dbConnectionGetter:DbConnection.IDbConnectionGetter
         return rowsInserted
     }
 
-let Sel_Envelope_Summary (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid =
-    let getItemFromReader (reader:MySqlDataReader) =
+let Sel_Envelope_Summary (dbConnectionGetter:DbConnection.DbConnectionGetter) uid =
+    let getItemFromReader (reader:OdbcDataReader) =
         async {
             let! hasRow = reader.ReadAsync() |> Async.AwaitTask
             if hasRow then
                 let a = (reader.GetInt32(2) |> System.Convert.ToDouble) / 100.0
 
-                let e = { Number = reader.GetUInt16(0); Name= reader.GetString(1); Amount = a }
+                let e = { Number = reader.GetInt16(0); Name= reader.GetString(1); Amount = a }
                 return Some e
             else
                 return None
         }
 
-    let rec recursivlyGetItems accList (reader:MySqlDataReader) =
+    let rec recursivlyGetItems accList (reader:OdbcDataReader) =
         async {
             let! result = getItemFromReader reader
             match result with
@@ -286,15 +285,15 @@ let Sel_Envelope_Summary (dbConnectionGetter:DbConnection.IDbConnectionGetter) u
 
         let command = connection.CreateCommand()
 
-        command.CommandText <- "sel_Envelope_Summary"
+        command.CommandText <- "{CALL sel_Envelope_Summary(?)}"
         command.CommandType <- System.Data.CommandType.StoredProcedure
 
-        AddParamWithTypeToCommand command "uID" uid MySqlDbType.UInt32 |> ignore
+        AddParamWithTypeToCommand command "uID" uid OdbcType.Int |> ignore
 
         do! connection.OpenAsync() |> Async.AwaitTask
 
         use! reader' = command.ExecuteReaderAsync() |> Async.AwaitTask
-        let reader = reader' :?> MySqlDataReader
+        let reader = reader' :?> OdbcDataReader
 
         let! result = recursivlyGetItems [] reader
 
@@ -304,20 +303,20 @@ let Sel_Envelope_Summary (dbConnectionGetter:DbConnection.IDbConnectionGetter) u
         return result |> List.rev
     }
 
-let Sel_Transactions (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid envelopeNumber limitNum page =
-    let getItemFromReader (reader:MySqlDataReader) =
+let Sel_Transactions (dbConnectionGetter:DbConnection.DbConnectionGetter) uid envelopeNumber limitNum page =
+    let getItemFromReader (reader:OdbcDataReader) =
         async {
             let! hasRow = reader.ReadAsync() |> Async.AwaitTask
             if hasRow then
                 let a = (reader.GetInt32(1) |> System.Convert.ToDouble) / 100.0
 
-                let e = { TransactionNumber = reader.GetUInt32(0); Amount = a; Date = reader.GetDateTime(2); Note = reader.GetString(3); }
+                let e = { TransactionNumber = reader.GetInt32(0); Amount = a; Date = reader.GetDateTime(2); Note = reader.GetString(3); }
                 return Some e
             else
                 return None
         }
 
-    let rec recursivlyGetItems accList (reader:MySqlDataReader) =
+    let rec recursivlyGetItems accList (reader:OdbcDataReader) =
         async {
             let! result = getItemFromReader reader
             match result with
@@ -333,24 +332,24 @@ let Sel_Transactions (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid e
 
         let command = connection.CreateCommand()
 
-        command.CommandText <- "sel_Transactions"
+        command.CommandText <- "{CALL sel_Transactions(?,?,?,?)}"
         command.CommandType <- System.Data.CommandType.StoredProcedure
 
-        AddParamWithTypeToCommand command "uID" uid MySqlDbType.UInt32 |> ignore
-        AddParamWithTypeToCommand command "eNumber" envelopeNumber MySqlDbType.UInt16 |> ignore
-        AddParamWithTypeToCommand command "limitNum" limitNum MySqlDbType.UInt32 |> ignore
-        AddParamWithTypeToCommand command "offsetNum" (limitNum * (page-1u)) MySqlDbType.UInt32 |> ignore
+        AddParamWithTypeToCommand command "uID" uid OdbcType.Int |> ignore
+        AddParamWithTypeToCommand command "eNumber" envelopeNumber OdbcType.SmallInt |> ignore
+        AddParamWithTypeToCommand command "limitNum" limitNum OdbcType.Int |> ignore
+        AddParamWithTypeToCommand command "offsetNum" (limitNum * (page-1)) OdbcType.Int |> ignore
     
         do! connection.OpenAsync() |> Async.AwaitTask
 
         use! reader' = command.ExecuteReaderAsync() |> Async.AwaitTask
-        let reader = reader' :?> MySqlDataReader
+        let reader = reader' :?> OdbcDataReader
 
         let! transactions = recursivlyGetItems [] reader
 
         let! throwAway = reader.NextResultAsync() |> Async.AwaitTask
         let! throwAway = reader.ReadAsync() |> Async.AwaitTask
-        let numOfTransactions = reader.GetUInt32(0)
+        let numOfTransactions = reader.GetInt32(0)
 
         let result = { NumberOfAllTransactions = numOfTransactions; Transactions = transactions |> List.rev}
 
@@ -360,23 +359,23 @@ let Sel_Transactions (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid e
         return result
     }
 
-let Sel_Transaction (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid envelopeNumber tNumber =
+let Sel_Transaction (dbConnectionGetter:DbConnection.DbConnectionGetter) uid envelopeNumber tNumber =
     task {
         use connection = dbConnectionGetter.GetNewConnection()
 
         let command = connection.CreateCommand()
 
-        command.CommandText <- "sel_Transaction"
+        command.CommandText <- "{CALL sel_Transaction(?,?,?)}"
         command.CommandType <- System.Data.CommandType.StoredProcedure
 
-        AddParamWithTypeToCommand command "uID" uid MySqlDbType.UInt32 |> ignore
-        AddParamWithTypeToCommand command "eNumber" envelopeNumber MySqlDbType.UInt16 |> ignore
-        AddParamWithTypeToCommand command "tNumber" tNumber MySqlDbType.UInt32 |> ignore
+        AddParamWithTypeToCommand command "uID" uid OdbcType.Int |> ignore
+        AddParamWithTypeToCommand command "eNumber" envelopeNumber OdbcType.SmallInt |> ignore
+        AddParamWithTypeToCommand command "tNumber" tNumber OdbcType.Int |> ignore
 
         do! connection.OpenAsync()
 
         use! reader' = command.ExecuteReaderAsync()
-        let reader = reader' :?> MySqlDataReader
+        let reader = reader' :?> OdbcDataReader
 
         let! hasResult = reader.ReadAsync()
 
@@ -384,7 +383,7 @@ let Sel_Transaction (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid en
             if hasResult then
                 let a = (reader.GetInt32(1) |> System.Convert.ToDouble) / 100.0
 
-                Some { TransactionNumber = reader.GetUInt32(0); Amount = a; Date = reader.GetDateTime(2); Note = reader.GetString(3); }
+                Some { TransactionNumber = reader.GetInt32(0); Amount = a; Date = reader.GetDateTime(2); Note = reader.GetString(3); }
             else 
                 None
 
@@ -394,19 +393,19 @@ let Sel_Transaction (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid en
         return result
     }
 
-let Transfer (dbConnectionGetter:DbConnection.IDbConnectionGetter) uid eSourceNumber eDestinationNumber amount =
+let Transfer (dbConnectionGetter:DbConnection.DbConnectionGetter) uid eSourceNumber eDestinationNumber amount =
     task {
         use connection = dbConnectionGetter.GetNewConnection()
 
         let command = connection.CreateCommand()
 
-        command.CommandText <- "transfer"
+        command.CommandText <- "{CALL transfer(?,?,?,?)}"
         command.CommandType <- System.Data.CommandType.StoredProcedure
 
-        AddParamWithTypeToCommand command "uID" uid MySqlDbType.UInt32 |> ignore
-        AddParamWithTypeToCommand command "eSourceNumber" eSourceNumber MySqlDbType.UInt16 |> ignore
-        AddParamWithTypeToCommand command "eDestinationNumber" eDestinationNumber MySqlDbType.UInt16 |> ignore
-        AddParamWithTypeToCommand command "amount" amount MySqlDbType.Int32 |> ignore
+        AddParamWithTypeToCommand command "uID" uid OdbcType.Int |> ignore
+        AddParamWithTypeToCommand command "eSourceNumber" eSourceNumber OdbcType.SmallInt |> ignore
+        AddParamWithTypeToCommand command "eDestinationNumber" eDestinationNumber OdbcType.SmallInt |> ignore
+        AddParamWithTypeToCommand command "amount" amount OdbcType.Int |> ignore
 
         do! connection.OpenAsync()
 

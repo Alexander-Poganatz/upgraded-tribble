@@ -5,11 +5,11 @@ module Utils
     open Microsoft.AspNetCore.Http
 
     let Layout = "_Layout"
-    let DefaultPaginationSize = 50u
+    let DefaultPaginationSize = 50
 
     let getUserIDFromClaims (principle:ClaimsPrincipal) =
         let claim = principle.Claims |> Seq.find (fun c -> c.Type = ClaimTypes.NameIdentifier)
-        claim.Value |> System.Convert.ToUInt32
+        claim.Value |> System.Convert.ToInt32
 
     let doubleMoneyToCents (dbl:double) =
         let intPart = System.Convert.ToInt32 dbl

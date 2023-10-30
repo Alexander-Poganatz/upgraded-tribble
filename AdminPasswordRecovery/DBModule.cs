@@ -1,48 +1,53 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MySqlConnector;
+﻿using System.Data.Odbc;
 namespace AdminPasswordRecovery
 {
     internal static class DBModule
     {
         public static Select_User_Result? GetUserPasswordConfig(string connectionString, string email)
         {
-            using var dbConnection = new MySqlConnection(connectionString);
+            using var dbConnection = new OdbcConnection(connectionString);
 
             dbConnection.Open();
 
             var command = dbConnection.CreateCommand();
-            command.CommandText = "SELECT UserID, LENGTH(PasswordHash) AS PasswordLength, LENGTH(PasswordSalt) AS SaltLength, Mib, Iterations, DegreeOfParallelism FROM `User` WHERE Email = ?e";
+            command.CommandText = "{CALL sel_UserByEmail(?)}";
+            command.CommandType = System.Data.CommandType.StoredProcedure;
             command.Parameters.AddWithValue("e", email);
 
             var reader = command.ExecuteReader();
 
             bool hasRow = reader.Read();
-            var userPasswordConfig = hasRow switch
+
+            Select_User_Result? userPasswordConfig = null;
+            if (hasRow)
             {
-                true => new Select_User_Result(reader.GetUInt32(0), reader.GetInt32(1), reader.GetInt32(2), reader.GetByte(3), reader.GetByte(4), reader.GetByte(5)),
-                false => new Select_User_Result?(),
-            };
+                var lengthOfPassword = Convert.ToInt16(reader.GetBytes(1, 0, null, 0, 0));
+                var lengthOfSalt = Convert.ToInt16(reader.GetBytes(2, 0, null, 0, 0));
+                userPasswordConfig = new Select_User_Result(reader.GetInt32(0), lengthOfPassword, lengthOfSalt, reader.GetInt16(3), reader.GetInt16(4), reader.GetInt16(5));
+            }
+
             reader.Close();
             dbConnection.Close();
 
             return userPasswordConfig;
         }
 
-        public static int SetPassword(string connectionString, uint uid, byte[] newPassword, byte[] newSalt) 
+        public static int SetPassword(string connectionString, byte[] newPassword, byte[] newSalt, Select_User_Result userData) 
         {
-            using var dbConnection = new MySqlConnection(connectionString);
+            using var dbConnection = new OdbcConnection(connectionString);
 
             dbConnection.Open();
 
             var command = dbConnection.CreateCommand();
-            command.CommandText = "UPDATE `User` SET PasswordHash = ?p, PasswordSalt = ?s WHERE UserID = ?i";
+            command.CommandText = "{CALL upd_User_Password(?,?,?,?,?,?)}";
+            command.CommandType = System.Data.CommandType.StoredProcedure;
+
+            command.Parameters.AddWithValue("i", userData.UserID);
             command.Parameters.AddWithValue("p", newPassword);
             command.Parameters.AddWithValue("s", newSalt);
-            command.Parameters.AddWithValue("i", uid);
+            command.Parameters.AddWithValue("m", userData.MiB);
+            command.Parameters.AddWithValue("i", userData.Iterations);
+            command.Parameters.AddWithValue("dop", userData.DoP);
 
             int rowsEffected = command.ExecuteNonQuery();
 

@@ -21,6 +21,10 @@ Also I don't know webpack and I don't want to learn webpack.
 ### Picnic.css
 I wanted something simple and smaller than bootstrap that still has all the features I could use.
 
+### ODBC
+Trying out an idea if the application can run on different databases without the application knowing anything about the database
+by being restricted to the ODBC interface. It also gives me a chance to also try out other databases without changing application code.
+
 ## AdminPasswordRecovery
 A console app to allow a local admin to reset a password.
 The console app expects two arguments: the path to an ini file, and a user "email"

@@ -3,9 +3,9 @@ DELIMITER //
 
 DROP PROCEDURE IF EXISTS upd_EnvelopeTransaction;
 CREATE PROCEDURE upd_EnvelopeTransaction(
-	IN uID INT UNSIGNED
-	,IN eNumber SMALLINT UNSIGNED
-	,IN tNumber INT UNSIGNED
+	IN uID INT
+	,IN eNumber SMALLINT
+	,IN tNumber INT
 	,IN amount INT SIGNED
 	,IN tDate DATE
 	,IN tNote NVARCHAR(50)

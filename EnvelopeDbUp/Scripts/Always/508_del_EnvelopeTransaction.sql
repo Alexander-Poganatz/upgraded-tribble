@@ -3,8 +3,8 @@ DELIMITER //
 
 DROP PROCEDURE IF EXISTS del_EnvelopeTransaction;
 CREATE PROCEDURE del_EnvelopeTransaction(
-	IN uID INT UNSIGNED
-	,IN eNumber SMALLINT UNSIGNED
+	IN uID INT
+	,IN eNumber SMALLINT
 	,IN tNumber INT
 )
 BEGIN

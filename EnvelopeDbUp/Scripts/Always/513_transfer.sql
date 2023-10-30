@@ -2,9 +2,9 @@ DELIMITER //
 
 DROP PROCEDURE IF EXISTS transfer;
 CREATE PROCEDURE transfer(
-	IN uID INT UNSIGNED
-	,IN eSourceNumber SMALLINT UNSIGNED
-	,IN eDestinationNumber SMALLINT UNSIGNED
+	IN uID INT
+	,IN eSourceNumber SMALLINT
+	,IN eDestinationNumber SMALLINT
 	,IN amount INT SIGNED
 )
 BEGIN

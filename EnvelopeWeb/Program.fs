@@ -56,24 +56,7 @@ module Program =
     let main args =
         let builder = WebApplication.CreateBuilder(args)
 
-        let iniPath = builder.Configuration["dbINIPath"]
-        if System.String.IsNullOrWhiteSpace iniPath = false then
-            builder.Configuration.AddIniFile iniPath |> ignore
-
-        let connectionString = 
-            let connectionString' = builder.Configuration["dbConnection"]
-            if connectionString' |> System.String.IsNullOrWhiteSpace then 
-                let mariaEnvelopeSection = builder.Configuration.GetSection("MariaEnvelope");
-            
-                let serverName = mariaEnvelopeSection["Servername"];
-                let databaseName = mariaEnvelopeSection["Database"];
-                let uid = mariaEnvelopeSection["UID"];
-                let pwd = mariaEnvelopeSection["PWD"];
-                    
-                $"server={serverName};uid={uid};pwd={pwd};database={databaseName};";
-                    
-            else
-                connectionString'
+        let connectionString = builder.Configuration["dbConnection"]
 
         builder.Services.AddGiraffe |> ignore
 
@@ -93,7 +76,7 @@ module Program =
         let useForwardHeaders = Convert.ToBoolean(builder.Configuration["useForwardHeaders"])
         let enforceHTTPSRedirection = Convert.ToBoolean(builder.Configuration["enforceHTTPSRedirection"])
 
-        let dbConnectionGetter = new DbConnection.DbConnectionGetter(connectionString) :> DbConnection.IDbConnectionGetter
+        let dbConnectionGetter = new DbConnection.DbConnectionGetter(connectionString)
 
         builder.Services.AddSingleton(dbConnectionGetter) |> ignore
 

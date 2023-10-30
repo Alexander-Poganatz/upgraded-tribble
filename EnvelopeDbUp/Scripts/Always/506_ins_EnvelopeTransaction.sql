@@ -3,8 +3,8 @@ DELIMITER //
 
 DROP PROCEDURE IF EXISTS ins_EnvelopeTransaction;
 CREATE PROCEDURE ins_EnvelopeTransaction(
-	IN uID INT UNSIGNED
-	,IN eNumber SMALLINT UNSIGNED
+	IN uID INT
+	,IN eNumber SMALLINT
 	,IN amount INT SIGNED
 	,IN tDate DATE
 	, IN tNote NVARCHAR(50)

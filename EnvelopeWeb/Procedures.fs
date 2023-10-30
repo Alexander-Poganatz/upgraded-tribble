@@ -23,9 +23,9 @@ let InsertUser (dbConnectionGetter:DbConnection.DbConnectionGetter) email passwo
         AddParamToCommand command "e" email |> ignore
         AddParamWithTypeToCommand command "p" passwordHash OdbcType.Binary |> ignore
         AddParamWithTypeToCommand command "s" passwordConfig.Salt OdbcType.Binary |> ignore
-        AddParamWithTypeToCommand command "m" passwordConfig.MiB OdbcType.TinyInt |> ignore
-        AddParamWithTypeToCommand command "i" passwordConfig.Iterations OdbcType.TinyInt |> ignore
-        AddParamWithTypeToCommand command "dop" passwordConfig.DegreeOfParallism OdbcType.TinyInt |> ignore
+        AddParamWithTypeToCommand command "m" passwordConfig.MiB OdbcType.SmallInt |> ignore
+        AddParamWithTypeToCommand command "i" passwordConfig.Iterations OdbcType.SmallInt |> ignore
+        AddParamWithTypeToCommand command "dop" passwordConfig.DegreeOfParallism OdbcType.SmallInt |> ignore
 
     
         do! connection.OpenAsync()

@@ -15,13 +15,10 @@ BEGIN
 	ORDER BY 1 DESC
 	LIMIT limitNum OFFSET offsetNum;
 	
-	SELECT COUNT(*) AS NumberOfTransactions
+	SELECT COUNT(*) AS NumberOfTransactions,
+	(SELECT oe.EnvelopeName FROM Envelope oe WHERE oe.UserID = uID AND oe.EnvelopeNumber = eNumber) AS EnvelopeName
 	FROM Envelope e
 	INNER JOIN EnvelopeTransaction t ON e.EnvelopeID = t.EnvelopeID
-	WHERE UserID = uID AND EnvelopeNumber = eNumber;
-	
-	SELECT e.EnvelopeName
-	FROM Envelope e
 	WHERE UserID = uID AND EnvelopeNumber = eNumber;
 	
 END //

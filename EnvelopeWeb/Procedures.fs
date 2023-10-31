@@ -347,11 +347,15 @@ let Sel_Transactions (dbConnectionGetter:DbConnection.DbConnectionGetter) uid en
 
         let! transactions = recursivlyGetItems [] reader
 
-        let! throwAway = reader.NextResultAsync() |> Async.AwaitTask
-        let! throwAway = reader.ReadAsync() |> Async.AwaitTask
+        let! _ = reader.NextResultAsync() |> Async.AwaitTask
+        let! _ = reader.ReadAsync() |> Async.AwaitTask
         let numOfTransactions = reader.GetInt32(0)
 
-        let result = { NumberOfAllTransactions = numOfTransactions; Transactions = transactions |> List.rev}
+        let! _ = reader.NextResultAsync() |> Async.AwaitTask
+        let! _ = reader.ReadAsync() |> Async.AwaitTask
+        let envelopeName = reader.GetString(0);
+
+        let result = { NumberOfAllTransactions = numOfTransactions; Transactions = transactions |> List.rev; EnvelopeName = envelopeName }
 
         do! reader.CloseAsync() |> Async.AwaitTask
         do! connection.CloseAsync() |> Async.AwaitTask

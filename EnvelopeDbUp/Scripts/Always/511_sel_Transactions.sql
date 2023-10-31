@@ -19,6 +19,11 @@ BEGIN
 	FROM Envelope e
 	INNER JOIN EnvelopeTransaction t ON e.EnvelopeID = t.EnvelopeID
 	WHERE UserID = uID AND EnvelopeNumber = eNumber;
+	
+	SELECT e.EnvelopeName
+	FROM Envelope e
+	WHERE UserID = uID AND EnvelopeNumber = eNumber;
+	
 END //
 
 DELIMITER ;

@@ -29,7 +29,7 @@ type Transaction = { TransactionNumber: int; Amount: double; Date: System.DateTi
 type Transfer = { DestinationNumber: int16; Amount: double; }
 
 [<CLIMutable>]
-type Sel_Transactions_Result = { NumberOfAllTransactions: int; Transactions: Transaction list}
+type Sel_Transactions_Result = { NumberOfAllTransactions: int; Transactions: Transaction list; EnvelopeName: string }
 
 [<CLIMutable>]
 type User = { Id: int; PasswordHash: byte array; LockoutExpiry: System.DateTime; PasswordConfig: PasswordConfig; }

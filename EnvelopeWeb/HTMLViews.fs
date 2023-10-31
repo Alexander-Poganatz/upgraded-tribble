@@ -290,11 +290,14 @@ let transactionIndex (envelopeNum: int16) (pagePath: string) (currentPageNumber:
             ]
 
     [
+        h2 [] [ encodedText model.EnvelopeName ]
         noscript [] [
             a [ _href transferUrl; _class "button" ] [ encodedText "Transfer" ]
+            span [] [ rawText "&nbsp;" ]
             a [ _href addUrl; _class "button" ] [ encodedText "Add Transaction" ]
         ]
-        label [ _for "modal1"; _hx_get transferUrl; _hx_target "#modalBody"; _class "button js-on" ] [ encodedText "Transfer"]
+        label [ _for "modal1"; _hx_get transferUrl; _hx_target "#modalBody"; _class "button js-on" ] [ encodedText "Transfer"; ]
+        span [] [ rawText "&nbsp;" ]
         label [ _for "modal1"; _hx_get addUrl; _hx_target "#modalBody"; _class "button js-on" ] [ encodedText "Add Transaction"]
         div [ _class "height-1em" ] []
         select [ _value (currentPageNumber.ToString()); _onchange "OnPageNumSelectChange(this)"; _class "js-on" ] optionsList
@@ -303,7 +306,7 @@ let transactionIndex (envelopeNum: int16) (pagePath: string) (currentPageNumber:
 
         genericHTMXModal
     ]
-    |> layout true "Transactions"
+    |> layout true model.EnvelopeName
 
 let private addOrUpdateTransactionViewPartial (operation: string) (submitPath: string) (eid : int16) antiForgeryNode (model: Models.Transaction) =
 

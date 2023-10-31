@@ -351,9 +351,7 @@ let Sel_Transactions (dbConnectionGetter:DbConnection.DbConnectionGetter) uid en
         let! _ = reader.ReadAsync() |> Async.AwaitTask
         let numOfTransactions = reader.GetInt32(0)
 
-        let! _ = reader.NextResultAsync() |> Async.AwaitTask
-        let! _ = reader.ReadAsync() |> Async.AwaitTask
-        let envelopeName = reader.GetString(0);
+        let envelopeName = reader.GetString(1);
 
         let result = { NumberOfAllTransactions = numOfTransactions; Transactions = transactions |> List.rev; EnvelopeName = envelopeName }
 

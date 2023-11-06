@@ -32,7 +32,7 @@ module Program =
                 routef "/Envelope/Update/%i" HTMLViewHandles.envelopeUpdateGetHandleChain
                 routef "/Envelope/Delete/%i" (fun eid -> HTMLViewHandles.requireLogin >=> HTMLViewHandles.developeEnvelopeGetHandle' eid)
                 routef "/Transaction/%i" (fun eid -> HTMLViewHandles.requireLogin >=> HTMLViewHandles.transactionGetHandle eid)
-                routef "/Transaction/CSV/%i" (fun eid -> HTMLViewHandles.requireLogin >=> setContentType "text/csv" >=> HTMLViewHandles.transactionCSV eid >=> setStatusCode 200)
+                routef "/Transaction/CSV/%i" (fun eid -> HTMLViewHandles.requireLogin >=> setContentType "text/csv" >=> HTMLViewHandles.transactionCSV eid)
                 routef "/Transaction/Add/%i" (fun eid -> HTMLViewHandles.requireLogin >=> HTMLViewHandles.addTransactionGetHandle eid)
                 routef "/Transaction/Update/%i/%i" (fun (eid, tid) -> HTMLViewHandles.requireLogin >=> HTMLViewHandles.updateTransactionGetHandle eid tid)
                 routef "/Transaction/Delete/%i/%i" (fun (eid, tid) -> HTMLViewHandles.requireLogin >=> HTMLViewHandles.deleteTransactionGetViewHandle eid tid)

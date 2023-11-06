@@ -362,8 +362,8 @@ let transactionCSV (eid32: int) (next : HttpFunc) (ctx : HttpContext) =
         let dbConnection = ctx.GetService<DbConnectionGetter>()
         let! transactionResult = Procedures.Sel_Transactions dbConnection uid eid System.Int32.MaxValue page
         
-        use textWriter = new System.IO.StreamWriter(ctx.Response.Body, System.Text.Encoding.UTF8, leaveOpen = true)
-        use writer = new CsvHelper.CsvWriter(textWriter, System.Globalization.CultureInfo.InvariantCulture, true)
+        let textWriter = new System.IO.StreamWriter(ctx.Response.Body, System.Text.Encoding.UTF8, leaveOpen = true)
+        let writer = new CsvHelper.CsvWriter(textWriter, System.Globalization.CultureInfo.InvariantCulture, true)
         let! _ = writer.WriteRecordsAsync(transactionResult.Transactions)
         let! _ = writer.DisposeAsync()
         let! _ = textWriter.DisposeAsync()

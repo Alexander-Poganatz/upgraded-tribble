@@ -354,6 +354,23 @@ let transactionGetHandle (eid32: int) (next : HttpFunc) (ctx : HttpContext) =
         return! (htmlView (HTMLViews.transactionIndex eid ctx.Request.Path.Value page transactionResult)) next ctx
     }
 
+let transactionCSV (eid32: int) (next : HttpFunc) (ctx : HttpContext) =
+    task {
+        let page = 1
+        let eid = eid32 |> int16
+        let uid = Utils.getUserIDFromClaims ctx.User
+        let dbConnection = ctx.GetService<DbConnectionGetter>()
+        let! transactionResult = Procedures.Sel_Transactions dbConnection uid eid System.Int32.MaxValue page
+        
+        use textWriter = new System.IO.StreamWriter(ctx.Response.Body, System.Text.Encoding.UTF8, leaveOpen = true)
+        use writer = new CsvHelper.CsvWriter(textWriter, System.Globalization.CultureInfo.InvariantCulture, true)
+        let! _ = writer.WriteRecordsAsync(transactionResult.Transactions)
+        let! _ = writer.DisposeAsync()
+        let! _ = textWriter.DisposeAsync()
+        
+        return! next ctx
+    }
+
 let private addTransactionGetHandle' (model: Models.Transaction) (eid32: int) (next : HttpFunc) (ctx : HttpContext) =
     let eid = eid32 |> int16
     let antiForgeryTag = createAntiForgeryTokenNode ctx

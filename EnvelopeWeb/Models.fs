@@ -23,7 +23,7 @@ type PasswordConfig = { MiB: int16; Iterations: int16; DegreeOfParallism: int16;
 type SignUp = { Email: string; Password: string; ConfirmPassword: string; }
 
 [<CLIMutable>]
-type Transaction = { TransactionNumber: int; Amount: double; Date: System.DateTime; Note: string; }
+type Transaction = { TransactionNumber: int; Amount: double; [<CsvHelper.Configuration.Attributes.FormatAttribute("yyyy-MM-dd")>]Date: System.DateTime; Note: string; }
 
 [<CLIMutable>]
 type Transfer = { DestinationNumber: int16; Amount: double; }

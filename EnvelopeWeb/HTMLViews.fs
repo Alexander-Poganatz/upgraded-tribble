@@ -228,6 +228,7 @@ let deleteEnvelopeFull (actionPath: string) antiForgeryInput (model: Models.Enve
 let transactionIndex (envelopeNum: int16) (pagePath: string) (currentPageNumber: int) (model: Models.Sel_Transactions_Result) =
     let transferUrl = sprintf "/Transaction/Transfer/%i" envelopeNum
     let addUrl = sprintf "/Transaction/Add/%i" envelopeNum
+    let csvURL = sprintf "/Transaction/CSV/%i" envelopeNum
 
     let maxNumberOfPages = (model.NumberOfAllTransactions / Utils.DefaultPaginationSize) + (if model.NumberOfAllTransactions % Utils.DefaultPaginationSize > 0 then 1 else 0)
     let numberOfPagesRange = seq { 1 .. maxNumberOfPages }
@@ -303,7 +304,9 @@ let transactionIndex (envelopeNum: int16) (pagePath: string) (currentPageNumber:
         select [ _value (currentPageNumber.ToString()); _onchange "OnPageNumSelectChange(this)"; _class "js-on" ] optionsList
         tableOrDiv
         noscript [] anchorList
-
+        div [] [
+            a [ _href csvURL; _class "button" ] [ encodedText "Download" ]
+        ]
         genericHTMXModal
     ]
     |> layout true model.EnvelopeName

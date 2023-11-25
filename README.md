@@ -4,7 +4,7 @@ A newer version of EnvelopeBudget as a web site
 ## Why are you making this project?
 1. I do envelope budgeting on a console app but it would be nice to have a Web UI that also works on mobile and can be hosted in a LAN
 2. Do things differently than what I do at work
-3. Chance to learn to implement things such as 2FA into something I use
+3. Chance to learn to implement things such as HTMX into something I use
 
 ## Technical Decisions
 
@@ -19,7 +19,8 @@ Trying out a world where nice, modern looking webpages doesn't need a whole lot 
 Also I don't know webpack and I don't want to learn webpack.
 
 ### Picnic.css
-I wanted something simple and smaller than bootstrap that still has all the features I could use.
+I wanted something simple and smaller than bootstrap that still has all the features I could use. It also uses the checkbox
+hack to bring up modals, thus mostly avoiding having to do any javascript callbacks.
 
 ### ODBC
 Trying out an idea if the application can run on different databases without the application knowing anything about the database
@@ -35,6 +36,7 @@ Ini is used because its easy to just have an ini file lying around that everythi
 can use in python projects that use odbc on linux.
 ```
 [MariaEnvelope]
+Driver=MariaDB Unicode
 Servername= database_address
 Database=envelope_database_name
 UID=sql_username
@@ -42,3 +44,11 @@ PWD=sql_password
 ```
 The EnvelopeDbUp app.settings has dbINISection field in case you want the envelope app to use a 
 different sql user than what the website would use.
+
+### Linux (Ubuntu based distros) ODBC Notes
+
+Packages needed:
+* odbc-mariadb (MariaDB ODBC Client)
+* libodbc2 (Used by System.Data.Odbc)
+
+/etc/odbcinst.ini cac be checked for what driver names are configured by the package manager

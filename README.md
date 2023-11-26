@@ -51,4 +51,4 @@ Packages needed:
 * odbc-mariadb (MariaDB ODBC Client)
 * libodbc2 (Used by System.Data.Odbc)
 
-/etc/odbcinst.ini cac be checked for what driver names are configured by the package manager
+/etc/odbcinst.ini can be checked for what driver names are configured by the package manager

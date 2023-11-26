@@ -1,0 +1,9 @@
+CREATE TABLE Envelope(
+	EnvelopeID INT NOT NULL IDENTITY(1,1)
+	,UserID INT NOT NULL
+	,EnvelopeNumber SMALLINT NOT NULL
+	,EnvelopeName NVARCHAR(50) NOT NULL
+	,CONSTRAINT PK_Envelope PRIMARY KEY(EnvelopeID)
+	,CONSTRAINT FK_Envelope_UserID FOREIGN KEY (UserID) REFERENCES [User](UserID)
+	,CONSTRAINT AK_Envelope_UserIDNumber UNIQUE (UserID, EnvelopeNumber)
+)

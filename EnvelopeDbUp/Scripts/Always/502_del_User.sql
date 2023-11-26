@@ -12,7 +12,7 @@ BEGIN
 		RESIGNAL;
 	END;
 	START TRANSACTION;
-	DELETE FROM EnvelopeTransaction WHERE EnvelopeID IN (SELECT EnvelopeID FROM ENVELOPE WHERE UserID = uID);
+	DELETE FROM EnvelopeTransaction WHERE EnvelopeID IN (SELECT EnvelopeID FROM Envelope WHERE UserID = uID);
 	DELETE FROM Envelope WHERE UserID = uID;
 	DELETE FROM User WHERE UserID = uID;
 	COMMIT;

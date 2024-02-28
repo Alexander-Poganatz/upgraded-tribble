@@ -4,7 +4,6 @@ open System
 open Microsoft.AspNetCore.Builder
 open Microsoft.Extensions.Logging
 open Microsoft.Extensions.DependencyInjection
-open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.Hosting
 open Microsoft.AspNetCore.Authentication.Cookies
 open Giraffe
@@ -96,6 +95,8 @@ module Program =
         app.UseStaticFiles() |> ignore
         app.UseAuthentication() |> ignore
         app.UseAuthorization() |> ignore
+
+        app.Use(CustomMiddleware.addHeaderMiddleWare) |> ignore
 
         app.UseGiraffe webApp
 

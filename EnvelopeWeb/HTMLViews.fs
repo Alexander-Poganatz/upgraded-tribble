@@ -19,6 +19,7 @@ let private layout (isAuthenticated) (titleStr:string) (content: XmlNode list) =
         head [] [
             meta [ _charset "utf-8" ]
             meta [ _name "viewport"; _content "width=device-width, initial-scale=1.0"; ]
+            meta [ _name "htmx-config"; _content "{\"includeIndicatorStyles\": false}" ]
             title [] [ encodedText ( titleStr + " - Envelope" ) ]
             link [ _rel "stylesheet"; _href "/lib/picnic/picnic.min.css"; _integrity "sha512-HZgZOfcUw1rxWuEBlzDis5U4HlbzR0wcWmb3FrLSKV6uhZiZpT9JSTzPJplHDmJZJFNfAReW+iDELJ1kADYHtA=="; crossorigin_anonymous ]
             link [ _rel "stylesheet"; _href "/css/site.css"; crossorigin_anonymous ]
@@ -39,12 +40,13 @@ let private layout (isAuthenticated) (titleStr:string) (content: XmlNode list) =
             footer [ _class "footer" ] [
                 div [ _class "container" ] [ rawText "&copy; 2023 - EnvelopeWeb" ]
             ]
-            script [ _src "/js/site.js"; crossorigin_anonymous ] []
+            
     #if DEBUG
             script [ _src "/lib/htmx/htmx.js"; _integrity "sha512-ykNAloLcNUzuRU5fTY3o9GYUCTQqT1nUqYTwioO6as9B0OR8J9UGctJVYB+fR8rFqXUO836nzcO3OGD+5L0Nyw=="; crossorigin_anonymous ] []
     #else
             script [ _src "/lib/htmx/htmx.min.js"; _integrity "sha512-ULbUWm8wCS6zRoxK/2v51vUHGhKvK8PSiqA02tyUYlYoeQm5wB8xr8lObq5zmNGpYaZsED0NLhaiPAAm2VbhXw=="; crossorigin_anonymous ] []
     #endif
+            script [ _src "/js/site.js"; crossorigin_anonymous; _defer; ] []
         ]
     ]
 
@@ -301,7 +303,10 @@ let transactionIndex (envelopeNum: int16) (pagePath: string) (currentPageNumber:
         span [] [ rawText "&nbsp;" ]
         label [ _for "modal1"; _hx_get addUrl; _hx_target "#modalBody"; _class "button js-on" ] [ encodedText "Add Transaction"]
         div [ _class "height-1em" ] []
-        select [ _value (currentPageNumber.ToString()); _onchange "OnPageNumSelectChange(this)"; _class "js-on" ] optionsList
+        div [ _class "js-on select-arrow" ] [
+            select [ _value (currentPageNumber.ToString()); _id "OnPageNumSelect"; ] optionsList
+        ]
+        
         tableOrDiv
         noscript [] anchorList
         div [] [

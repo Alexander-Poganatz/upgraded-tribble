@@ -18,3 +18,10 @@ function OnPageNumSelectChange(event) {
     console.log(window.location);
     window.location.href = window.location.origin + window.location.pathname + "?page=" + event.value;
 }
+
+{
+    let selectElement = document.getElementById("OnPageNumSelect");
+    if (selectElement != null) {
+        selectElement.addEventListener("change", OnPageNumSelectChange);
+    }
+}

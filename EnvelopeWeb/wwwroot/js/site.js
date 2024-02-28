@@ -14,9 +14,8 @@ document.body.classList.remove("js-off");
 
 // For transaction page
 function OnPageNumSelectChange(event) {
-    console.log(event.value);
-    console.log(window.location);
-    window.location.href = window.location.origin + window.location.pathname + "?page=" + event.value;
+    let value = event.target.value;
+    window.location.href = window.location.origin + window.location.pathname + "?page=" + value;
 }
 
 {

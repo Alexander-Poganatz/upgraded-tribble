@@ -45,3 +45,28 @@ main {
 .height-1em {
     height: 1em;
 }
+
+/* Need to replace picnic.css background for Content Security Policy */
+select {
+    background: #fff;
+}
+
+.select-arrow {
+    position: relative;
+    display: inline block;
+}
+
+.select-arrow:after {
+    content: '';
+    width: 0px;
+    height: 0px;
+    position: absolute;
+    right: 0.9em;
+    top: 0.9em;
+    margin-right: 0px;
+    border-left: 0.5em solid transparent;
+    border-right: 0.5em solid transparent;
+    border-top: 0.5em solid #000;
+    transition: all 0.3s linear;
+}
+

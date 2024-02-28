@@ -6,6 +6,7 @@ open Microsoft.Extensions.Logging
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
 open Microsoft.AspNetCore.Authentication.Cookies
+open Microsoft.AspNetCore.Hosting
 open Giraffe
 
 module Program =
@@ -79,6 +80,8 @@ module Program =
         let dbConnectionGetter = new DbConnection.DbConnectionGetter(connectionString)
 
         builder.Services.AddSingleton(dbConnectionGetter) |> ignore
+
+        builder.WebHost.ConfigureKestrel(fun (kso) -> kso.AddServerHeader <- false) |> ignore
 
         let app = builder.Build()
 

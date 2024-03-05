@@ -42,8 +42,12 @@ main {
     margin-top: 1em;
 }
 
-.height-1em {
-    height: 1em;
+.p1 {
+    padding: 1em;
+}
+
+.m1 {
+    margin: 1em;
 }
 
 /* Need to replace picnic.css background for Content Security Policy */
@@ -70,3 +74,39 @@ select {
     transition: all 0.3s linear;
 }
 
+@keyframes rotateSpinner {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(359deg);
+    }
+}
+
+.spinner {
+    display: inline-block;
+    height: 1em;
+    width: 1em;
+    border-radius: 50%;
+    border: 2px solid lightgrey;
+    border-top: 2px solid black;
+    animation-name: rotateSpinner;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+/* Reimplement htmx-indicator in the stylesheet because of content security policy */
+/* Not really being used but will keep in for reference */
+.htmx-indicator {
+    opacity:0;
+    transition: opacity 500ms ease-in;
+}
+
+.htmx-request .htmx-indicator {
+    opacity:1;
+}
+
+.htmx-request.htmx-indicator {
+    opacity:1;
+}

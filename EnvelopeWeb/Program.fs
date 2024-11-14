@@ -8,6 +8,7 @@ open Microsoft.Extensions.Hosting
 open Microsoft.AspNetCore.Authentication.Cookies
 open Microsoft.AspNetCore.Hosting
 open Giraffe
+open Giraffe.EndpointRouting
 
 module Program =
 
@@ -20,15 +21,15 @@ module Program =
     let time() = System.DateTime.Now.ToString()
 
     let webApp =
-        choose [
-            GET >=> choose [
-                route "/" >=> HTMLViewHandles.homeViewHandle
-                route "/Account/Login" >=> HTMLViewHandles.requireSignOut >=> HTMLViewHandles.loginGetHandle
-                route "/Account/Logout" >=> signOut CookieAuthenticationDefaults.AuthenticationScheme >=> redirectTo false "/"
-                route "/Account/SignUp" >=> HTMLViewHandles.requireSignOut >=> HTMLViewHandles.signUpGetHandle
-                route "/Account/PasswordReset" >=> HTMLViewHandles.requireLogin >=> HTMLViewHandles.resetPasswordGetHandle
-                route "/Envelope" >=> HTMLViewHandles.requireLogin >=> HTMLViewHandles.envelopeIndexHandle
-                route "/Envelope/Add" >=> HTMLViewHandles.requireLogin >=> HTMLViewHandles.envelopeAddGetHandle
+        [
+            GET [
+                route "/" HTMLViewHandles.homeViewHandle
+                route "/Account/Login" (HTMLViewHandles.requireSignOut >=> HTMLViewHandles.loginGetHandle)
+                route "/Account/Logout" (signOut CookieAuthenticationDefaults.AuthenticationScheme >=> redirectTo false "/")
+                route "/Account/SignUp" (HTMLViewHandles.requireSignOut >=> HTMLViewHandles.signUpGetHandle)
+                route "/Account/PasswordReset" (HTMLViewHandles.requireLogin >=> HTMLViewHandles.resetPasswordGetHandle)
+                route "/Envelope" (HTMLViewHandles.requireLogin >=> HTMLViewHandles.envelopeIndexHandle)
+                route "/Envelope/Add" (HTMLViewHandles.requireLogin >=> HTMLViewHandles.envelopeAddGetHandle)
                 routef "/Envelope/Update/%i" HTMLViewHandles.envelopeUpdateGetHandleChain
                 routef "/Envelope/Delete/%i" (fun eid -> HTMLViewHandles.requireLogin >=> HTMLViewHandles.developeEnvelopeGetHandle' eid)
                 routef "/Transaction/%i" (fun eid -> HTMLViewHandles.requireLogin >=> HTMLViewHandles.transactionGetHandle eid)
@@ -38,11 +39,11 @@ module Program =
                 routef "/Transaction/Delete/%i/%i" (fun (eid, tid) -> HTMLViewHandles.requireLogin >=> HTMLViewHandles.deleteTransactionGetViewHandle eid tid)
                 routef "/Transaction/Transfer/%i" (fun eid -> HTMLViewHandles.requireLogin >=> HTMLViewHandles.transferGetHandle eid)
             ];
-            POST >=> choose [
-                route "/Account/Login" >=> HTMLViewHandles.requireSignOut >=> HTMLViewHandles.validateAntiForgeryToken >=> HTMLViewHandles.loginPostHandle
-                route "/Account/SignUp" >=> HTMLViewHandles.requireSignOut >=> HTMLViewHandles.validateAntiForgeryToken >=> HTMLViewHandles.signUpPostHandle
-                route "/Account/PasswordReset" >=> HTMLViewHandles.requireLogin >=> HTMLViewHandles.validateAntiForgeryToken >=> HTMLViewHandles.resetPasswordPostHandle
-                route "/Envelope/Add" >=> HTMLViewHandles.requireLogin >=> HTMLViewHandles.validateAntiForgeryToken >=> HTMLViewHandles.envelopeAddPostHandle
+            POST [
+                route "/Account/Login" (HTMLViewHandles.requireSignOut >=> HTMLViewHandles.validateAntiForgeryToken >=> HTMLViewHandles.loginPostHandle)
+                route "/Account/SignUp" (HTMLViewHandles.requireSignOut >=> HTMLViewHandles.validateAntiForgeryToken >=> HTMLViewHandles.signUpPostHandle)
+                route "/Account/PasswordReset" (HTMLViewHandles.requireLogin >=> HTMLViewHandles.validateAntiForgeryToken >=> HTMLViewHandles.resetPasswordPostHandle)
+                route "/Envelope/Add" (HTMLViewHandles.requireLogin >=> HTMLViewHandles.validateAntiForgeryToken >=> HTMLViewHandles.envelopeAddPostHandle)
                 routef "/Envelope/Update/%i" HTMLViewHandles.envelopeUpdatePostHandleChain
                 routef "/Envelope/Delete/%i" (fun eid -> HTMLViewHandles.requireLogin >=> HTMLViewHandles.validateAntiForgeryToken >=> HTMLViewHandles.deleteEnvelopePostHandle eid)
                 routef "/Transaction/Add/%i" (fun eid -> HTMLViewHandles.requireLogin >=> HTMLViewHandles.validateAntiForgeryToken >=> HTMLViewHandles.addTransactionPostHandle eid)
@@ -101,7 +102,7 @@ module Program =
 
         app.Use(CustomMiddleware.addHeaderMiddleWare) |> ignore
 
-        app.UseGiraffe webApp
+        app.UseRouting().UseEndpoints(fun e -> e.MapGiraffeEndpoints(webApp)) |> ignore
 
         app.Run()
 
